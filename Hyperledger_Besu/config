@@ -1,0 +1,47 @@
+enode://b7def52c3ec8802dcfeabf52082fe0eb08066d145aa7d2147ba3cdfebe6180e2073aee0b58c4dca2e64ed7c10a8294bdedb67afad212dd594731a5aec85f1804@127.0.0.1:30303
+besu --data-path=data --genesis-file=../cliqueGenesis.json --network-id 123 --rpc-http-enabled --rpc-http-api=ETH,NET,CLIQUE,WEB3 --host-allowlist="*" --rpc-http-cors-origins="all"
+curl -X POST --data '{"jsonrpc":"2.0","method":"net_peerCount","params":[],"id":1}' localhost:8545
+besu --data-path=data --genesis-file=../cliqueGenesis.json --bootnodes=enode://b7def52c3ec8802dcfeabf52082fe0eb08066d145aa7d2147ba3cdfebe6180e2073aee0b58c4dca2e64ed7c10a8294bdedb67afad212dd594731a5aec85f1804@127.0.0.1:30303 --network-id 123 --p2p-port=30304 --rpc-http-enabled --rpc-http-api=ETH,NET,CLIQUE,WEB3 --host-allowlist="*" --rpc-http-cors-origins="all" --rpc-http-port=8546 --profile=ENTERPRISE
+
+besu --data-path=data --genesis-file=../cliqueGenesis.json --bootnodes=enode://b7def52c3ec8802dcfeabf52082fe0eb08066d145aa7d2147ba3cdfebe6180e2073aee0b58c4dca2e64ed7c10a8294bdedb67afad212dd594731a5aec85f1804@127.0.0.1:30303 --network-id 123 --p2p-port=30305 --rpc-http-enabled --rpc-http-api=ETH,NET,CLIQUE,WEB3 --host-allowlist="*" --rpc-http-cors-origins="all" --rpc-http-port=8547 --profile=ENTERPRISE
+
+
+besu --data-path=data --genesis-file=../cliqueGenesis.json --bootnodes=enode://b7def52c3ec8802dcfeabf52082fe0eb08066d145aa7d2147ba3cdfebe6180e2073aee0b58c4dca2e64ed7c10a8294bdedb67afad212dd594731a5aec85f1804@127.0.0.1:30303 --network-id 123 --p2p-port=30306 --rpc-http-enabled --rpc-http-api=ETH,NET,CLIQUE,WEB3 --host-allowlist="*" --rpc-http-cors-origins="all" --rpc-http-port=8548 --profile=ENTERPRISE
+
+
+besu --data-path=data --genesis-file=../cliqueGenesis.json --bootnodes=enode://b7def52c3ec8802dcfeabf52082fe0eb08066d145aa7d2147ba3cdfebe6180e2073aee0b58c4dca2e64ed7c10a8294bdedb67afad212dd594731a5aec85f1804@127.0.0.1:30303 --network-id 123 --p2p-port=30307 --rpc-http-enabled --rpc-http-api=ETH,NET,CLIQUE,WEB3 --host-allowlist="*" --rpc-http-cors-origins="all" --rpc-http-port=8549 --profile=ENTERPRISE
+
+besu --data-path=data --genesis-file=../cliqueGenesis.json --bootnodes=enode://b7def52c3ec8802dcfeabf52082fe0eb08066d145aa7d2147ba3cdfebe6180e2073aee0b58c4dca2e64ed7c10a8294bdedb67afad212dd594731a5aec85f1804@127.0.0.1:30303 --network-id 123 --p2p-port=30308 --rpc-http-enabled --rpc-http-api=ETH,NET,CLIQUE,WEB3 --host-allowlist="*" --rpc-http-cors-origins="all" --rpc-http-port=8550 --profile=ENTERPRISE
+
+
+curl -X POST --data '{"jsonrpc":"2.0","method":"net_peerCount","params":[],"id":1}' localhost:8545
+
+
+
+
+Behidj Neila@LAPTOP-1F7HT6L0 MINGW64 ~/Desktop/Besu
+$ node deploy.js
+
+Déploiement de GestionDiplome...
+(node:1276) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+rawTx:  {
+  nonce: '0x4',
+  gasPrice: 0,
+  gasLimit: '0x7A1200',
+  to: null,
+  value: '0x00',
+
+}
+Création de la transaction...
+Signature de la transaction...
+Envoi de la transaction...
+GestionDiplome déployé à : 0x2e1f232a9439c3d459fceca0beef13acc8259dd8
+
+✅ Déploiement terminé avec succès !
+
+Behidj Neila@LAPTOP-1F7HT6L0 MINGW64 ~/Desktop/Besu
+$
+
+
+GestionDiplome déployé à : 0x42699a7612a82f1d9c36148af9c77354759b210b

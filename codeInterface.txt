@@ -1,0 +1,1204 @@
+
+      {/* Section Fonctionnalités */}
+      <section style={{
+        padding: '6rem 2rem',
+        maxWidth: '1200px',
+        margin: '0 auto'
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <h2 style={{
+            fontSize: '2.5rem',
+            fontWeight: '700',
+            color: colors.darkBg,
+            marginBottom: '1rem'
+          }}>
+            Une plateforme <span style={{ color: colors.primary }}>complète</span>
+          </h2>
+          <p style={{
+            fontSize: '1.1rem',
+            color: colors.textLight,
+            maxWidth: '700px',
+            margin: '0 auto'
+          }}>
+            Découvrez comment CertifyMe protège l'intégrité des diplômes grâce à des technologies de pointe.
+          </p>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '2rem',
+          marginTop: '3rem'
+        }}>
+
+          {/* Carte 1 - Blockchain */}
+<FlipCard
+  front={
+    <>
+      <div style={{ marginBottom: '1.5rem' }}>
+        {/* Icône blockchain */}
+      </div>
+      <h3 style={{ fontSize: '1.5rem', fontWeight: '600', color: colors.darkBg, marginBottom: '1rem' }}>
+        Technologie Blockchain
+      </h3>
+    </>
+  }
+  back={
+    <p style={{ color: colors.textLight, lineHeight: '1.6' }}>
+      Chaque diplôme est enregistré sur la blockchain, assurant une traçabilité et une sécurité sans faille.
+    </p>
+  }
+/>
+
+          {/* Carte 2 - Vérification instantanée */}
+          <motion.div
+            whileHover={{ y: -10 }}
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              padding: '2rem',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
+              border: `1px solid ${colors.border}`
+            }}
+          >
+            <div style={{
+              width: '60px',
+              height: '60px',
+              backgroundColor: `${colors.primary}10`,
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '1.5rem'
+            }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={colors.primary}>
+                <path d="M22 11.08V12a10 10 0 11-5.93-9.14" strokeWidth="2"/>
+                <path d="M22 4L12 14.01l-3-3" strokeWidth="2"/>
+              </svg>
+            </div>
+            <h3 style={{
+              fontSize: '1.5rem',
+              fontWeight: '600',
+              color: colors.darkBg,
+              marginBottom: '1rem'
+            }}>Vérification instantanée</h3>
+            <p style={{
+              color: colors.textLight,
+              lineHeight: '1.6',
+              marginBottom: '1.5rem'
+            }}>
+              Vérifiez l'authenticité d'un diplôme en quelques secondes grâce à notre système de QR code et numéro unique.
+            </p>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              color: colors.primary,
+              fontWeight: '500'
+            }}>
+              En savoir plus
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ marginLeft: '0.5rem' }}>
+                <path d="M5 12h14M12 5l7 7-7 7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          </motion.div>
+
+          {/* Carte 3 - Reconnaissance IA */}
+          <motion.div
+            whileHover={{ y: -10 }}
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              padding: '2rem',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
+              border: `1px solid ${colors.border}`
+            }}
+          >
+            <div style={{
+              width: '60px',
+              height: '60px',
+              backgroundColor: `${colors.blockchainPurple}10`,
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '1.5rem'
+            }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={colors.blockchainPurple}>
+                <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242M16 17l-4 4m0 0l-4-4m4 4V3" strokeWidth="2"/>
+              </svg>
+            </div>
+            <h3 style={{
+              fontSize: '1.5rem',
+              fontWeight: '600',
+              color: colors.darkBg,
+              marginBottom: '1rem'
+            }}>Reconnaissance IA</h3>
+            <p style={{
+              color: colors.textLight,
+              lineHeight: '1.6',
+              marginBottom: '1.5rem'
+            }}>
+              Notre intelligence artificielle analyse automatiquement les documents scannés pour détecter les falsifications.
+            </p>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              color: colors.blockchainPurple,
+              fontWeight: '500'
+            }}>
+              En savoir plus
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ marginLeft: '0.5rem' }}>
+                <path d="M5 12h14M12 5l7 7-7 7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+https://boxicons.com/
+
+https://ui.shadcn.com/docs/installation/manual
+
+
+https://ui.shadcn.com/docs/installation/next
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import Header from '../components/Header';
+import { useRouter } from 'next/router';
+
+
+
+
+const HomePage = () => {
+  const router = useRouter();
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const storedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialDark = storedTheme === 'dark' || (!storedTheme && prefersDark);
+    document.documentElement.setAttribute('data-theme', initialDark ? 'dark' : 'light');
+    setIsDark(initialDark);
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    setIsDark(!isDark);
+  };
+  
+  const colors = {
+    primary: '#2F855A',
+    secondary: '#2D3748',
+    accent: '#38A169',
+    lightBg: '#F7FAFC',
+    darkBg: '#1A202C',
+    textDark: '#1C1C1C',
+    textLight: '#718096',
+    border: '#CBD5E0',
+    success: '#2F855A',
+    error: '#C53030',
+    warning: '#D69E2E',
+    blockchainBlue: '#2775CA',
+    blockchainPurple: '#6F42C1'
+  };
+
+  return (
+
+    <div className="relative">
+      {/* Switcher dark mode */}
+      <button
+        onClick={toggleTheme}
+        className="fixed top-8 right-4 w-10 h-10 rounded-full flex items-center justify-center border dark:border-white border-gray-300 bg-white dark:bg-gray-800 shadow-lg z-50"
+        aria-label="Toggle Dark Mode"
+      >
+        {isDark ? (
+          <svg className="w-6 h-6 text-yellow-300" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 3a1 1 0 011 1v2a1 1 0 11-2 0V4a1 1 0 011-1zM12 17a1 1 0 011 1v2a1 1 0 11-2 0v-2a1 1 0 011-1zm7-5a1 1 0 011 1h2a1 1 0 110 2h-2a1 1 0 11-2 0 1 1 0 011-1zm-14 0a1 1 0 011 1H4a1 1 0 110 2h2a1 1 0 11-2 0 1 1 0 011-1zm11.071 6.071a1 1 0 011.414 0l1.414 1.414a1 1 0 11-1.414 1.414L17.071 19.9a1 1 0 010-1.414zM5.515 5.515a1 1 0 011.414 0L8.343 7.1a1 1 0 11-1.414 1.414L5.515 6.929a1 1 0 010-1.414zm0 12.97a1 1 0 000 1.414l1.414 1.414a1 1 0 001.414-1.414L6.93 17.07a1 1 0 00-1.414 0zm12.97-12.97a1 1 0 000 1.414L19.9 8.343a1 1 0 001.414-1.414L19.9 5.515a1 1 0 00-1.414 0z" />
+          </svg>
+        ) : (
+          <svg className="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M21.64 13.2A9 9 0 1110.8 2.36 7 7 0 0021.64 13.2z" />
+          </svg>
+        )}
+      </button>
+
+    <div style={{
+      backgroundColor: colors.lightBg,
+      minHeight: '100vh',
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+      overflowX: 'hidden'
+    }}>
+      <Header />
+
+      {/* Hero Section avec animation blockchain */}
+      <section style={{
+        position: 'relative',
+        overflow: 'hidden',
+        padding: '6rem 2rem',
+        background: `linear-gradient(135deg, ${colors.lightBg} 0%, ${colors.primary}20 100%)`,
+        textAlign: 'center'
+      }}>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          style={{ position: 'relative', zIndex: 1 }}
+        >
+          <div style={{
+            display: 'inline-block',
+            padding: '1rem',
+            backgroundColor: `${colors.primary}15`,
+            borderRadius: '12px',
+            marginBottom: '1.5rem'
+          }}>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={colors.primary}>
+              <path d="M12 2L3 7l9 5 9-5-9-5zM3 17l9 5 9-5M3 12l9 5 9-5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          
+          <h1 style={{
+            fontSize: '3.5rem',
+            fontWeight: '800',
+            color: colors.darkBg,
+            margin: '0 auto 1.5rem',
+            maxWidth: '800px',
+            lineHeight: '1.2'
+          }}>
+            <span style={{ color: colors.primary }}>CertifyMe</span> : La révolution blockchain contre la fraude académique
+          </h1>
+          
+          <p style={{
+            fontSize: '1.25rem',
+            color: colors.textLight,
+            maxWidth: '700px',
+            margin: '0 auto 3rem',
+            lineHeight: '1.6'
+          }}>
+            Une solution infalsifiable pour certifier et vérifier les diplômes grâce à la technologie blockchain.
+          </p>
+          
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => router.push('/login')}
+              style={{
+                padding: '1rem 2rem',
+                backgroundColor: colors.primary,
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                boxShadow: `0 4px 14px ${colors.primary}40`
+              }}
+            >
+              Commencer maintenant
+            </motion.button>
+            
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => router.push('/demo')}
+              style={{
+                padding: '1rem 2rem',
+                backgroundColor: 'white',
+                color: colors.primary,
+                border: `2px solid ${colors.primary}`,
+                borderRadius: '8px',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              Voir la démo
+            </motion.button>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Section Fonctionnalités */}
+      <section style={{
+        padding: '6rem 2rem',
+        maxWidth: '1200px',
+        margin: '0 auto'
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <h2 style={{
+            fontSize: '2.5rem',
+            fontWeight: '700',
+            color: colors.darkBg,
+            marginBottom: '1rem'
+          }}>
+            Une plateforme <span style={{ color: colors.primary }}>complète</span>
+          </h2>
+          <p style={{
+            fontSize: '1.1rem',
+            color: colors.textLight,
+            maxWidth: '700px',
+            margin: '0 auto'
+          }}>
+            Découvrez comment CertifyMe protège l'intégrité des diplômes grâce à des technologies de pointe.
+          </p>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '2rem',
+          marginTop: '3rem'
+        }}>
+          {/* Carte 1 - Blockchain */}
+          <motion.div
+            whileHover={{ y: -10 }}
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              padding: '2rem',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
+              border: `1px solid ${colors.border}`
+            }}
+          >
+            <div style={{
+              width: '60px',
+              height: '60px',
+              backgroundColor: `${colors.blockchainBlue}10`,
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '1.5rem'
+            }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={colors.blockchainBlue}>
+                <path d="M2 2h20v20H2V2z" strokeWidth="2"/>
+                <path d="M8 2v20M2 8h20M2 16h20M16 2v20" strokeWidth="1.5"/>
+              </svg>
+            </div>
+            <h3 style={{
+              fontSize: '1.5rem',
+              fontWeight: '600',
+              color: colors.darkBg,
+              marginBottom: '1rem'
+            }}>Technologie Blockchain</h3>
+            <p style={{
+              color: colors.textLight,
+              lineHeight: '1.6',
+              marginBottom: '1.5rem'
+            }}>
+              Chaque diplôme est enregistré de manière immuable et transparente sur la blockchain, garantissant son authenticité à vie.
+            </p>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              color: colors.blockchainBlue,
+              fontWeight: '500'
+            }}>
+              En savoir plus
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ marginLeft: '0.5rem' }}>
+                <path d="M5 12h14M12 5l7 7-7 7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          </motion.div>
+
+          {/* Carte 2 - Vérification instantanée */}
+          <motion.div
+            whileHover={{ y: -10 }}
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              padding: '2rem',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
+              border: `1px solid ${colors.border}`
+            }}
+          >
+            <div style={{
+              width: '60px',
+              height: '60px',
+              backgroundColor: `${colors.primary}10`,
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '1.5rem'
+            }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={colors.primary}>
+                <path d="M22 11.08V12a10 10 0 11-5.93-9.14" strokeWidth="2"/>
+                <path d="M22 4L12 14.01l-3-3" strokeWidth="2"/>
+              </svg>
+            </div>
+            <h3 style={{
+              fontSize: '1.5rem',
+              fontWeight: '600',
+              color: colors.darkBg,
+              marginBottom: '1rem'
+            }}>Vérification instantanée</h3>
+            <p style={{
+              color: colors.textLight,
+              lineHeight: '1.6',
+              marginBottom: '1.5rem'
+            }}>
+              Vérifiez l'authenticité d'un diplôme en quelques secondes grâce à notre système de QR code et numéro unique.
+            </p>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              color: colors.primary,
+              fontWeight: '500'
+            }}>
+              En savoir plus
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ marginLeft: '0.5rem' }}>
+                <path d="M5 12h14M12 5l7 7-7 7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          </motion.div>
+
+          {/* Carte 3 - Reconnaissance IA */}
+          <motion.div
+            whileHover={{ y: -10 }}
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              padding: '2rem',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
+              border: `1px solid ${colors.border}`
+            }}
+          >
+            <div style={{
+              width: '60px',
+              height: '60px',
+              backgroundColor: `${colors.blockchainPurple}10`,
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '1.5rem'
+            }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={colors.blockchainPurple}>
+                <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242M16 17l-4 4m0 0l-4-4m4 4V3" strokeWidth="2"/>
+              </svg>
+            </div>
+            <h3 style={{
+              fontSize: '1.5rem',
+              fontWeight: '600',
+              color: colors.darkBg,
+              marginBottom: '1rem'
+            }}>Reconnaissance IA</h3>
+            <p style={{
+              color: colors.textLight,
+              lineHeight: '1.6',
+              marginBottom: '1.5rem'
+            }}>
+              Notre intelligence artificielle analyse automatiquement les documents scannés pour détecter les falsifications.
+            </p>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              color: colors.blockchainPurple,
+              fontWeight: '500'
+            }}>
+              En savoir plus
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ marginLeft: '0.5rem' }}>
+                <path d="M5 12h14M12 5l7 7-7 7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Section Statistiques */}
+      <section style={{
+        backgroundColor: colors.darkBg,
+        padding: '6rem 2rem',
+        color: 'white',
+        textAlign: 'center'
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{
+            fontSize: '2.5rem',
+            fontWeight: '700',
+            marginBottom: '3rem'
+          }}>
+            L'ampleur du <span style={{ color: colors.primary }}>problème</span>
+          </h2>
+          
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '2rem',
+            marginTop: '3rem'
+          }}>
+            <div>
+              <div style={{
+                fontSize: '3rem',
+                fontWeight: '700',
+                color: colors.primary,
+                marginBottom: '0.5rem'
+              }}>30%</div>
+              <p style={{ color: '#CBD5E0' }}>des CVs contiennent des fausses informations académiques</p>
+            </div>
+            <div>
+              <div style={{
+                fontSize: '3rem',
+                fontWeight: '700',
+                color: colors.primary,
+                marginBottom: '0.5rem'
+              }}>500K</div>
+              <p style={{ color: '#CBD5E0' }}>diplômes falsifiés détectés chaque année</p>
+            </div>
+            <div>
+              <div style={{
+                fontSize: '3rem',
+                fontWeight: '700',
+                color: colors.primary,
+                marginBottom: '0.5rem'
+              }}>85%</div>
+              <p style={{ color: '#CBD5E0' }}>des employeurs préoccupés par ce phénomène</p>
+            </div>
+            <div>
+              <div style={{
+                fontSize: '3rem',
+                fontWeight: '700',
+                color: colors.primary,
+                marginBottom: '0.5rem'
+              }}>100%</div>
+              <p style={{ color: '#CBD5E0' }}>sécurité avec CertifyMe</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section Processus */}
+      <section style={{
+        padding: '6rem 2rem',
+        maxWidth: '1200px',
+        margin: '0 auto'
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <h2 style={{
+            fontSize: '2.5rem',
+            fontWeight: '700',
+            color: colors.darkBg,
+            marginBottom: '1rem'
+          }}>
+            Comment ça <span style={{ color: colors.primary }}>fonctionne</span> ?
+          </h2>
+          <p style={{
+            fontSize: '1.1rem',
+            color: colors.textLight,
+            maxWidth: '700px',
+            margin: '0 auto'
+          }}>
+            Un processus simple et sécurisé pour les établissements et les vérificateurs
+          </p>
+        </div>
+
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '3rem',
+          position: 'relative'
+        }}>
+          {/* Ligne de connexion */}
+          <div style={{
+            position: 'absolute',
+            left: '40px',
+            top: '0',
+            bottom: '0',
+            width: '4px',
+            backgroundColor: `${colors.primary}20`,
+            zIndex: 0
+          }}></div>
+
+          {/* Étape 1 */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '2rem',
+            position: 'relative',
+            zIndex: 1
+          }}>
+            <div style={{
+              width: '80px',
+              height: '80px',
+              flexShrink: 0,
+              backgroundColor: `${colors.primary}10`,
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: `2px solid ${colors.primary}`
+            }}>
+              <div style={{
+                width: '60px',
+                height: '60px',
+                backgroundColor: colors.primary,
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontWeight: '700',
+                fontSize: '1.5rem'
+              }}>1</div>
+            </div>
+            <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '12px', flex: 1, boxShadow: '0 5px 20px rgba(0,0,0,0.05)' }}>
+              <h3 style={{
+                fontSize: '1.5rem',
+                fontWeight: '600',
+                color: colors.darkBg,
+                marginBottom: '1rem'
+              }}>Enregistrement du diplôme</h3>
+              <p style={{
+                color: colors.textLight,
+                lineHeight: '1.6',
+                marginBottom: '1.5rem'
+              }}>
+                L'institution académique enregistre le diplôme sur la blockchain CertifyMe via notre plateforme sécurisée.
+              </p>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '0.5rem 1rem',
+                backgroundColor: `${colors.primary}10`,
+                borderRadius: '6px',
+                color: colors.primary,
+                fontWeight: '500',
+                fontSize: '0.9rem'
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ marginRight: '0.5rem' }}>
+                  <path d="M12 2L3 7l9 5 9-5-9-5zM3 17l9 5 9-5M3 12l9 5 9-5" strokeWidth="2"/>
+                </svg>
+                Pour les institutions
+              </div>
+            </div>
+          </div>
+
+          {/* Étape 2 */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '2rem',
+            position: 'relative',
+            zIndex: 1
+          }}>
+            <div style={{
+              width: '80px',
+              height: '80px',
+              flexShrink: 0,
+              backgroundColor: `${colors.primary}10`,
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: `2px solid ${colors.primary}`
+            }}>
+              <div style={{
+                width: '60px',
+                height: '60px',
+                backgroundColor: colors.primary,
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontWeight: '700',
+                fontSize: '1.5rem'
+              }}>2</div>
+            </div>
+            <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '12px', flex: 1, boxShadow: '0 5px 20px rgba(0,0,0,0.05)' }}>
+              <h3 style={{
+                fontSize: '1.5rem',
+                fontWeight: '600',
+                color: colors.darkBg,
+                marginBottom: '1rem'
+              }}>Certification blockchain</h3>
+              <p style={{
+                color: colors.textLight,
+                lineHeight: '1.6',
+                marginBottom: '1.5rem'
+              }}>
+                Le diplôme reçoit un hash unique et est enregistré de manière immuable sur la blockchain Ethereum.
+              </p>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '0.5rem 1rem',
+                backgroundColor: `${colors.blockchainBlue}10`,
+                borderRadius: '6px',
+                color: colors.blockchainBlue,
+                fontWeight: '500',
+                fontSize: '0.9rem'
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ marginRight: '0.5rem' }}>
+                  <path d="M2 2h20v20H2V2z" strokeWidth="2"/>
+                  <path d="M8 2v20M2 8h20M2 16h20M16 2v20" strokeWidth="1.5"/>
+                </svg>
+                Technologie blockchain
+              </div>
+            </div>
+          </div>
+
+          {/* Étape 3 */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '2rem',
+            position: 'relative',
+            zIndex: 1
+          }}>
+            <div style={{
+              width: '80px',
+              height: '80px',
+              flexShrink: 0,
+              backgroundColor: `${colors.primary}10`,
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: `2px solid ${colors.primary}`
+            }}>
+              <div style={{
+                width: '60px',
+                height: '60px',
+                backgroundColor: colors.primary,
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontWeight: '700',
+                fontSize: '1.5rem'
+              }}>3</div>
+            </div>
+            <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '12px', flex: 1, boxShadow: '0 5px 20px rgba(0,0,0,0.05)' }}>
+              <h3 style={{
+                fontSize: '1.5rem',
+                fontWeight: '600',
+                color: colors.darkBg,
+                marginBottom: '1rem'
+              }}>Vérification instantanée</h3>
+              <p style={{
+                color: colors.textLight,
+                lineHeight: '1.6',
+                marginBottom: '1.5rem'
+              }}>
+                Les employeurs peuvent scanner le QR code ou saisir le numéro unique pour vérifier instantanément l'authenticité du diplôme.
+              </p>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '0.5rem 1rem',
+                backgroundColor: `${colors.accent}10`,
+                borderRadius: '6px',
+                color: colors.accent,
+                fontWeight: '500',
+                fontSize: '0.9rem'
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ marginRight: '0.5rem' }}>
+                  <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 8v4M12 16h.01" strokeWidth="2"/>
+                </svg>
+                Pour les recruteurs
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section CTA */}
+      <section style={{
+        padding: '6rem 2rem',
+        background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.darkBg} 100%)`,
+        color: 'white',
+        textAlign: 'center'
+      }}>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h2 style={{
+            fontSize: '2.5rem',
+            fontWeight: '700',
+            marginBottom: '1.5rem'
+          }}>
+            Prêt à révolutionner la certification académique ?
+          </h2>
+          <p style={{
+            fontSize: '1.25rem',
+            maxWidth: '700px',
+            margin: '0 auto 3rem',
+            opacity: 0.9
+          }}>
+            Rejoignez les centaines d'institutions qui font déjà confiance à CertifyMe pour sécuriser leurs diplômes.
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => router.push('/contact')}
+              style={{
+                padding: '1rem 2rem',
+                backgroundColor: 'white',
+                color: colors.primary,
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              Nous contacter
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => router.push('/demo')}
+              style={{
+                padding: '1rem 2rem',
+                backgroundColor: 'transparent',
+                color: 'white',
+                border: '2px solid white',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              Voir une démo
+            </motion.button>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Footer */}
+      <footer style={{
+        backgroundColor: colors.darkBg,
+        color: 'white',
+        padding: '4rem 2rem 2rem',
+        fontSize: '0.9rem'
+      }}>
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '3rem',
+          marginBottom: '3rem'
+        }}>
+          <div>
+            <h3 style={{
+              fontSize: '1.2rem',
+              fontWeight: '600',
+              marginBottom: '1.5rem',
+              color: colors.primary
+            }}>CertifyMe</h3>
+            <p style={{ marginBottom: '1rem', opacity: 0.8 }}>
+              La solution ultime contre la fraude académique grâce à la blockchain.
+            </p>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <a href="#" style={{ color: 'white', opacity: 0.7, ':hover': { opacity: 1 } }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" strokeWidth="2"/>
+                </svg>
+              </a>
+              <a href="#" style={{ color: 'white', opacity: 0.7, ':hover': { opacity: 1 } }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" strokeWidth="2"/>
+                </svg>
+              </a>
+              <a href="#" style={{ color: 'white', opacity: 0.7, ':hover': { opacity: 1 } }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" strokeWidth="2"/>
+                  <circle cx="4" cy="4" r="2" strokeWidth="2"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+          
+          <div>
+            <h4 style={{
+              fontSize: '1rem',
+              fontWeight: '600',
+              marginBottom: '1.5rem',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              opacity: 0.7
+            }}>Solutions</h4>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Pour les universités</a></li>
+              <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Pour les entreprises</a></li>
+              <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Pour les étudiants</a></li>
+              <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>API d'intégration</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 style={{
+              fontSize: '1rem',
+              fontWeight: '600',
+              marginBottom: '1.5rem',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              opacity: 0.7
+            }}>Ressources</h4>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Documentation</a></li>
+              <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Centre d'aide</a></li>
+              <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Blog</a></li>
+              <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Presse</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 style={{
+              fontSize: '1rem',
+              fontWeight: '600',
+              marginBottom: '1.5rem',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              opacity: 0.7
+            }}>Entreprise</h4>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>À propos</a></li>
+              <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Carrières</a></li>
+              <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Contact</a></li>
+              <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Partenaires</a></li>
+            </ul>
+          </div>
+        </div>
+        
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          paddingTop: '2rem',
+          borderTop: `1px solid ${colors.textLight}20`,
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: '1rem',
+          fontSize: '0.8rem',
+          opacity: 0.7
+        }}>
+          <div>© 2023 CertifyMe. Tous droits réservés.</div>
+          <div style={{ display: 'flex', gap: '1.5rem' }}>
+            <a href="#" style={{ color: 'white', textDecoration: 'none' }}>Confidentialité</a>
+            <a href="#" style={{ color: 'white', textDecoration: 'none' }}>Conditions</a>
+            <a href="#" style={{ color: 'white', textDecoration: 'none' }}>Cookies</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    </div>
+  );
+};
+
+export default HomePage;
+
+
+
+
+
+
+Usage	Couleurs
+Arrière-plan	#F5F5F5 (blanc cassé)
+Header/Footer	#2A3F8F (bleu navy)
+Boutons Principaux	#00BCD4 (cyan) ou #4CAF50 (vert)
+Textes	#263238 (gris foncé) sur fond clair
+npm install --save-exact \
+tailwindcss@3.4.0 \
+postcss@8.4.35 \
+autoprefixer@10.4.16 \
+lottie-react@3.4.0
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import Header from '../components/Header';
+import DiplomaAnimation from '../components/DiplomaAnimation';
+import { useRouter } from 'next/router';
+
+
+
+
+const HomePage = () => {
+  const router = useRouter();
+  
+
+  const colors = {
+    primary: '#2F855A',
+    secondary: '#2D3748',
+    accent: '#38A169',
+    lightBg: '#F7FAFC',
+    darkBg: '#1A202C',
+    textDark: '#1C1C1C',
+    textLight: '#718096',
+    border: '#CBD5E0',
+    success: '#2F855A',
+    error: '#C53030',
+    warning: '#D69E2E',
+    blockchainBlue: '#2775CA',
+    blockchainPurple: '#6F42C1'
+  };
+
+  return (
+
+    <div>
+      <Header />
+
+<section className="flex flex-col lg:flex-row items-stretch min-h-[90vh] relative overflow-hidden">
+  {/* Nouveau fond avec dégradé et motif */}
+  <div className="absolute inset-0 z-0" 
+       style={{
+         background: 'linear-gradient(to left, #2A3F8F 0%, #F7FAFC 100%)',
+         opacity: 0.95
+       }}>
+    <div className="absolute inset-0 opacity-30"
+         style={{
+           backgroundImage: `
+             radial-gradient(circle at 25% 25%, rgba(42, 63, 143, 0.08) 0%, transparent 40%),
+             radial-gradient(circle at 75% 75%, rgba(163, 157, 252, 0.08) 0%, transparent 40%),
+             linear-gradient(to right, transparent 95%, rgba(42, 63, 143, 0.03) 100%),
+             linear-gradient(to bottom, transparent 95%, rgba(0, 188, 212, 0.03) 100%)
+           `,
+           backgroundSize: '60px 50px'
+         }}>
+    </div>
+  </div>
+  {/* Partie gauche - Texte */}
+  <div className="w-full lg:w-6/12 flex items-center px-8 py-12 lg:py-20 z-10">
+    <div className="w-full max-w-4xl mx-auto">
+      <motion.h1
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="text-5xl lg:text-6xl font-semibold text-gray-900 leading-snug mb-6 tracking-wide"
+        style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
+      >
+        Certificats et badges numériques <span className="text-[#2A3F8F]">sécurisés</span>, <span className="text-[#2A3F8F]">vérifiables</span> et <span className="text-[#2A3F8F]">valides à vie</span>
+      </motion.h1>
+
+      <p className="text-lg lg:text-xl font-light text-gray-800 leading-relaxed tracking-wide mb-6">
+        Diplômes, micro-certifications, attestations : simplifiez vos processus grâce à des certificats numériques sur mesure, infalsifiables, et accessibles à vie via notre technologie blockchain brevetée. Une solution fiable, sobre et souveraine.
+      </p>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.4 }}
+        >
+        <button
+          onClick={() => router.push('/PageAcceuil/RolePage')}
+          className="mt-4 text-white font-semibold py-3 px-8 rounded-md transition duration-200 text-lg"
+          style={{
+           backgroundColor: 'rgb(58, 50, 50)',
+           border: 'none'
+          }}
+          >
+            Certifiez vos données
+        </button>
+      </motion.div>
+    </div>
+  </div>
+
+  {/* Partie droite - Animation */}
+  <div className="w-full lg:w-6/12 flex items-center justify-center z-12 px-6 py-15">
+    <motion.div
+      className="w-full max-w-[900px] lg:max-w-[1000px]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1, delay: 0.5 }}
+    >
+      <DiplomaAnimation />
+    </motion.div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <div className="w-full lg:w-5/12 flex items-center px-8 py-6 z-10">
+        <div className="w-full max-w-4xl mx-auto">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-4xl lg:text-5xl font-semibold text-white leading-snug mb-6 tracking-wide"
+            style={{ fontFamily: "'Georgia', 'Arial', serif" }}
+          >
+            Certificats <span className="text-[#4fc3f7]">blockchain</span> infalsifiables
+          </motion.h1>
+
+          <p className="text-base lg:text-lg font-light text-gray-300 leading-relaxed tracking-wide mb-6">
+            Une technologie révolutionnaire pour authentifier diplômes et certifications 
+            de manière permanente et inviolable sur la blockchain.
+          </p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            <button
+              onClick={() => router.push('/PageAcceuil/RolePage')}
+              className="mt-6 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 text-lg hover:bg-[#3a5fc8] hover:scale-105"
+              style={{
+                backgroundColor: '#1a3a8f',
+                border: '1px solid rgba(79, 195, 247, 0.3)',
+                boxShadow: '0 0 20px rgba(79, 195, 247, 0.2)'
+              }}
+            >
+              Démarrer la certification
+            </button>
+          </motion.div>
+        </div>
+      </div>
