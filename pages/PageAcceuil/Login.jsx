@@ -5,6 +5,11 @@ import { motion } from 'framer-motion';
 import { FaExclamationTriangle, FaArrowLeft, FaSpinner, FaEnvelope, FaLock , FaUserCircle, FaSignInAlt, FaUserPlus, FaShieldAlt} from 'react-icons/fa';
 import { useRouter } from 'next/router';
 import Header from "../../components/Header.jsx";
+import ScrollToTopButton from '../../components/ScrollToTopButton'; 
+import LoginAnimation from '../../public/animations/login.json';
+import dynamic from 'next/dynamic';
+const Lottie = dynamic(() => import('lottie-react'), { ssr: false });
+
 
 const Login = () => {
   const router = useRouter();
@@ -49,9 +54,14 @@ switch(response.data.account.role) {
     router.push(`/ministry/${safeToken}`);
     break;
   }
-  case 'ECOLE':
-    router.push('/ecole');
-    break;
+   
+  case 'ECOLE': {
+  const safeToken = encodeURIComponent(response.data.token);
+  localStorage.setItem('ecole_token', response.data.token);
+  console.log("Token reçu:", response.data.token); // Pour débogage
+  router.push(`/ecole/${safeToken}`);
+  break;
+}
   case 'STUDENT':
     const safeToken = encodeURIComponent(response.data.token);
     localStorage.setItem('student_token', response.data.token); 
@@ -68,223 +78,114 @@ switch(response.data.account.role) {
       setLoading(false);
     }
   };
-
-  const colors = {
-    primary: '#2F855A',       // Vert validation
-    secondary: '#2D3748',     // Gris charbon
-    accent: '#38A169',        // Vert accent
-    lightBg: '#F7FAFC',       // Fond clair
-    darkBg: '#1A202C',        // Fond sombre
-    textDark: '#1C1C1C',      // Texte principal
-    textLight: '#718096',     // Texte secondaire
-    border: '#CBD5E0',        // Bordures
-    success: '#2F855A',       // Succès
-    error: '#C53030',         // Erreur
-    warning: '#D69E2E',       // Avertissement
-    blockchain: '#4C6B8A',    // Couleur blockchain
-  };
-  
+ 
+const colors = {
+  primary: '#1E3A8A',       // Bleu roi – confiance, autorité, prestige
+  secondary: '#2D3748',     // Gris foncé – modernité, sobriété
+  accent: '#1E3A8A',        // Bleu clair – boutons, interactions (hover/CTA)
+  lightBg: '#F9FAFB',       // Fond clair – propre, neutre
+  darkBg: '#1A202C',        // Fond sombre – header, footer, élégance
+  textDark: '#111827',      // Texte principal – lisible, sérieux
+  textLight: '#6B7280',     // Texte secondaire – descriptions, placeholders
+  border: '#E5E7EB',        // Bordures discrètes – pour structurer sans surcharger
+  success: '#16A34A',       // Vert succès – confirmation d’action réussie
+  error: '#DC2626',         // Rouge erreur – sérieux sans être agressif
+  warning: '#F59E0B'        // Jaune doux – signal d’attention maîtrisé
+};
   return (
-    <div style={{
-      backgroundColor: "#f0f9f1",
-      minHeight: '100vh',
-      padding: '0rem',
-      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-    display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      position: 'relative',
-      overflow: 'hidden'
-    }}>
-    <Header />
-       {/* Background elements */}
-       <div style={{
-        position: 'absolute',
-        top: '-50%',
-        left: '-50%',
-        width: '100%',
-        height: '200%',
-        background: `radial-gradient(circle at 30% 50%, ${colors.primary}20, transparent 40%)`,
-        zIndex: 0
-      }} />
-      
-      <div style={{
-        position: 'absolute',
-        bottom: '-30%',
-        right: '-30%',
-        width: '80%',
-        height: '80%',
-        background: `radial-gradient(circle at 70% 70%, ${colors.accent}15, transparent 50%)`,
-        zIndex: 0
-      }} />
-      
-      {/* Floating icons */}
-      <motion.div
-        animate={{
-          y: [0, -15, 0],
-          rotate: [0, 5, 0]
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        style={{
-          position: 'absolute',
-          top: '20%',
-          left: '15%',
-          opacity: 0.1,
-          zIndex: 0
-        }}
-      >
-        <FaEnvelope size={120} color={colors.darkBlue} />
-      </motion.div>
-      
-      <motion.div
-        animate={{
-          y: [0, 15, 0],
-          rotate: [0, -5, 0]
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 2
-        }}
-        style={{
-          position: 'absolute',
-          bottom: '25%',
-          right: '20%',
-          opacity: 0.1,
-          zIndex: 0
-        }}
-      >
-        <FaLock size={150} color={colors.accent} />
-      </motion.div>
+     <div>
 
-      
-      {/* Blockchain background pattern */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundImage: `
-          linear-gradient(to right, ${colors.blockchain}10 1px, transparent 1px),
-          linear-gradient(to bottom, ${colors.blockchain}10 1px, transparent 1px)
-        `,
-        backgroundSize: '40px 40px',
-        opacity: 0.3,
-        zIndex: 0
-      }} />
-      
-      {/* Blockchain nodes animation */}
-      <div style={{
-        position: 'absolute',
-        top: '20%',
-        left: '15%',
-        width: '10px',
-        height: '10px',
-        borderRadius: '50%',
-        backgroundColor: colors.primary,
-        boxShadow: `0 0 20px ${colors.primary}`,
-        zIndex: 0,
-        animation: 'pulse 3s infinite'
-      }} />
+       <header className="bg-white  border-b border-gray-200">
+        <Header />
+      </header>
+
+    {/* Contenu principal - prend toute la largeur */}
+    <main >
    
-
-      
-
-      
-      {/* Blockchain connection lines */}
-      <svg width="100%" height="100%" style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        zIndex: 0,
-        opacity: 0.1
+    <div style={{
+  backgroundColor: "#ffffff",
+  minHeight: '100vh',
+  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+  display: 'flex',
+  alignItems: 'center'
+}}>
+  {/* Conteneur principal */}
+  <div style={{
+    display: 'flex',
+    width: '100%',
+    margin: '0 auto',
+    padding: '4.2rem',
+    gap: '3rem'
+  }}>
+    {/* Zone d'animation (gauche) - discrète */}
+    <div style={{
+      flex: 1,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minWidth: '300px'
+    }}>
+      {/* Espace réservé pour votre animation réduite */}
+      <div style={{
+        width: '100%',
+        height: '350px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: '8px'
       }}>
-        <line x1="15%" y1="20%" x2="30%" y2="40%" stroke={colors.darkBg} strokeWidth="2" strokeDasharray="5,5" />
-        <line x1="30%" y1="40%" x2="70%" y2="35%" stroke={colors.darkBg} strokeWidth="2" strokeDasharray="5,5" />
-        <line x1="70%" y1="35%" x2="80%" y2="25%" stroke={colors.darkBg} strokeWidth="2" strokeDasharray="5,5" />
-      </svg>
-  
-      {/* Main card */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        style={{
-          position: "relative",
-          backgroundColor: "white",
-          borderRadius: "20px",
-          boxShadow: "0 25px 50px rgba(0,0,0,0.1)",
-          overflow: "hidden",
-          width: "100%",
-          maxWidth: "500px",
-          zIndex: 1,
-          border: `1px solid ${colors.border}`
-        }}
-      >
-         <div style={{
-          background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-          padding: "1rem 1rem 0.5rem",
-          position: "relative",
-          textAlign: "center",
-          overflow: 'hidden'
-        }}>
-          
-  
-          
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            style={{
-              position: "absolute",
-              top: "1.5rem",
-              left: "1.5rem",
-              background: "rgba(255,255,255,0.2)",
-              padding: "0.5rem",
-              borderRadius: "8px",
-      
-            }}
-            onClick={() => router.push('/')}
-          >
-            <FaArrowLeft color="white" />
-          </motion.div>
-  
-          {/* University + Blockchain logo */}
-          
-  
-          <h2 style={{
-            color: "white",
-            fontSize: "1.8rem",
-            fontWeight: "500",
-            margin: "0.5rem 0 0 0",
-            position: 'relative',
-            zIndex: 1
-          }}>
-            Connexion 
-          </h2>
-          <p style={{
-            color: "rgba(255,255,255,0.85)",
-            fontSize: "0.9rem",
-            marginTop: "0.5rem",
-            position: 'relative',
-            zIndex: 1
-          }}>
-           Accédez à votre espace sécurisé
-          </p>
-        </div>
-        
-        {/* Form section */}
         <div style={{
-          position: 'relative',
-          padding: '2rem'
+          color: colors.textLight,
+          fontSize: '0.9rem',
+          textAlign: 'center',
+          padding: '1rem'
         }}>
-         
+        <Lottie
+              animationData={LoginAnimation}
+              loop
+              autoplay
+          style={{
+          position: "absolute",
+          right: "-1%",
+          bottom: -10,
+          width: "145%",
+          height: "115%"
+        }}
+           />
+        </div>
+      </div>
+    </div>
+
+    {/* Zone de login (droite) */}
+    <div style={{
+      flex: 1,
+      maxWidth: '440px',
+      padding: '0 1rem', 
+      paddingTop : '2rem',
+    }}>
+      {/* En-tête discret */}
+      <div style={{ 
+        marginBottom: '1rem',
+        borderBottom: `1px solid ${colors.border}20`,
+        paddingBottom: '1rem'
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+                  <h1 style={{ 
+                    fontSize: '1.5rem',
+                    fontWeight: '500',
+                    color: colors.textDark,
+                    marginBottom: '0.5rem'
+                  }}>Connexion</h1>
+                  <p style={{ 
+                    color: colors.textLight,
+                    fontSize: '0.95rem'
+                  }}>Accédez à votre espace sécurisé</p>
+                </div>
           
+      </div>
+
+      {/* Formulaire ultra-minimaliste */}
+       
           <form onSubmit={handleSubmit} style={{ position: 'relative', zIndex: 1 }}>
             {error && (
               <motion.div
@@ -341,26 +242,17 @@ switch(response.data.account.role) {
   onChange={handleChange}
   placeholder="Email ou nom d'utilisateur"
   style={{
-    width: "85%",
-    padding: "1rem 1rem 1rem 3rem",
-    borderRadius: "10px",
+    width: "100%",
+    padding: '0.75rem 1rem',
+              fontSize: '0.9rem',
+              borderRadius: "10px",
     border: `1px solid ${colors.border}`,
-    fontSize: "0.95rem",
     color: colors.textDark,
     transition: "all 0.3s ease",
     backgroundColor: 'white'
   }}
   required
 />
-
-                <FaEnvelope style={{ 
-                  position: "absolute", 
-                  left: "1rem", 
-                  top: "50%", 
-                  transform: "translateY(-50%)", 
-                  color: colors.textLight,
-                  fontSize: "1rem"
-                }} />
               </div>
             </motion.div>
   
@@ -387,14 +279,7 @@ switch(response.data.account.role) {
                   <FaLock color={colors.primary} />
                   Mot de passe
                 </label>
-                <a href="#" style={{
-                  color: colors.textLight,
-                  fontSize: '0.8rem',
-                  textDecoration: 'none',
-                  transition: 'color 0.2s ease'
-                }}>
-                  Mot de passe oublié ?
-                </a>
+               
               </div>
               
               <div style={{ 
@@ -410,25 +295,18 @@ switch(response.data.account.role) {
                   onChange={handleChange}
                   placeholder="••••••••"
                   style={{
-                    width: "85%",
-                    padding: "1rem 1rem 1rem 3rem",
-                    borderRadius: "10px",
+                    width: "100%",
+                     padding: '0.75rem 1rem',
+              fontSize: '0.9rem',
+              borderRadius: "10px",
                     border: `1px solid ${colors.border}`,
-                    fontSize: "0.95rem",
-                    color: colors.textDark,
+                     color: colors.textDark,
                     transition: "all 0.3s ease",
                     backgroundColor: 'white'
                   }}
                   required
                 />
-                <FaLock style={{ 
-                  position: "absolute", 
-                  left: "1rem", 
-                  top: "50%", 
-                  transform: "translateY(-50%)", 
-                  color: colors.textLight,
-                  fontSize: "1rem"
-                }} />
+                
               </div>
             </motion.div>
   
@@ -446,15 +324,17 @@ switch(response.data.account.role) {
                 background: loading ? colors.textLight : `linear-gradient(135deg, ${colors.accent}, ${colors.secondary})`,
                 color: "white",
                 border: "none",
-                borderRadius: "10px",
-                padding: "1rem",
-                fontSize: "1rem",
-                fontWeight: "500",
+                borderRadius: "4px",
+                padding: '0.75rem',
+            fontSize: '0.95rem',
+           fontWeight: "500",
                 cursor: loading ? 'not-allowed' : 'pointer',
                 boxShadow: `0 6px 16px ${colors.primary}30`,
                 transition: "all 0.3s ease",
                 display: 'flex',
-                alignItems: 'center',
+                alignItems: 'center', 
+                marginBottom: '1.5rem',
+           
                 justifyContent: 'center',
                 gap: '0.5rem'
               }}
@@ -471,74 +351,157 @@ switch(response.data.account.role) {
                 </>
               )}
             </motion.button>
-          </form>
-        </div>
-  
-        {/* Footer */}
-        <div style={{
-          padding: '1rem 2rem',
+               {/* Lien d'inscription */}
+        <div style={{ 
           textAlign: 'center',
-          borderTop: `1px solid ${colors.lightBg}`,
-          color: colors.textLight,
-          fontSize: '0.8rem',
-          position: 'relative',
-          zIndex: 1,
-          backgroundColor: 'rgba(255,255,255,0.7)',
-          backdropFilter: 'blur(5px)'
+          fontSize: '0.85rem',
+          color: colors.textLight
         }}>
-          Pas encore de compte ?{' '}
+          Nouvel utilisateur ?{' '}
           <a 
-            href="#" 
-            style={{ 
-              color: colors.primary, 
-              fontWeight: '600',
-              textDecoration: 'none',
-              position: 'relative'
-            }}
+            href="#"
             onClick={(e) => {
               e.preventDefault();
               router.push('/PageAcceuil/RolePage');
             }}
+            style={{
+              color: colors.primary,
+              fontWeight: '500',
+              textDecoration: 'none'
+            }}
           >
-            <span style={{
-              position: 'relative',
-              zIndex: 1
-            }}>
-              S'inscrire
-            </span>
-            <span style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              width: '100%',
-              height: '1px',
-              backgroundColor: colors.primary,
-              transform: 'scaleX(0)',
-              transition: 'transform 0.3s ease',
-              zIndex: 0
-            }} />
+            Créer un compte
           </a>
         </div>
-      </motion.div>
-  
-      {/* Global styles */}
-      <style jsx global>{`
-        @keyframes pulse {
-          0% { transform: scale(1); opacity: 0.8; }
-          50% { transform: scale(1.1); opacity: 1; }
-          100% { transform: scale(1); opacity: 0.8; }
-        }
-        
-        .spin {
-          animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
+
+          </form>
     </div>
+  </div>
+</div>
+    </main>
+    
+        {/* Footer */}
+              <footer style={{
+                backgroundColor: colors.darkBg,
+                color: 'white',
+                padding: '4rem 2rem 2rem',
+                fontSize: '0.9rem'
+              }}>
+                <div style={{
+                  maxWidth: '1200px',
+                  margin: '0 auto',
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                  gap: '3rem',
+                  marginBottom: '3rem'
+                }}>
+                  <div>
+                    <h3 style={{
+                      fontSize: '1.2rem',
+                      fontWeight: '600',
+                      marginBottom: '1.5rem',
+                      color: colors.primary
+                    }}>CertifyMe</h3>
+                    <p style={{ marginBottom: '1rem', opacity: 0.8 }}>
+                      La solution ultime contre la fraude académique grâce à la blockchain.
+                    </p>
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                      <a href="#" style={{ color: 'white', opacity: 0.7, ':hover': { opacity: 1 } }}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                          <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" strokeWidth="2"/>
+                        </svg>
+                      </a>
+                      <a href="#" style={{ color: 'white', opacity: 0.7, ':hover': { opacity: 1 } }}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                          <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" strokeWidth="2"/>
+                        </svg>
+                      </a>
+                      <a href="#" style={{ color: 'white', opacity: 0.7, ':hover': { opacity: 1 } }}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                          <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" strokeWidth="2"/>
+                          <circle cx="4" cy="4" r="2" strokeWidth="2"/>
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 style={{
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      marginBottom: '1.5rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px',
+                      opacity: 0.7
+                    }}>Solutions</h4>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                      <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Pour les universités</a></li>
+                      <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Pour les entreprises</a></li>
+                      <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Pour les étudiants</a></li>
+                      <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>API d'intégration</a></li>
+                    </ul>
+                  </div>
+                  
+                  <div>
+                    <h4 style={{
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      marginBottom: '1.5rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px',
+                      opacity: 0.7
+                    }}>Ressources</h4>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                      <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Documentation</a></li>
+                      <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Centre d'aide</a></li>
+                      <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Blog</a></li>
+                      <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Presse</a></li>
+                    </ul>
+                  </div>
+                  
+                  <div>
+                    <h4 style={{
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      marginBottom: '1.5rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px',
+                      opacity: 0.7
+                    }}>Entreprise</h4>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                      <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>À propos</a></li>
+                      <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Carrières</a></li>
+                      <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Contact</a></li>
+                      <li style={{ marginBottom: '0.75rem' }}><a href="#" style={{ color: 'white', opacity: 0.8, textDecoration: 'none', ':hover': { opacity: 1 } }}>Partenaires</a></li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div style={{
+                  maxWidth: '1200px',
+                  margin: '0 auto',
+                  paddingTop: '2rem',
+                  borderTop: `1px solid ${colors.textLight}20`,
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: '1rem',
+                  fontSize: '0.8rem',
+                  opacity: 0.7
+                }}>
+                  <div>© 2025 CertifyMe. Tous droits réservés.</div>
+                  <div style={{ display: 'flex', gap: '1.5rem' }}>
+                    <a href="#" style={{ color: 'white', textDecoration: 'none' }}>Confidentialité</a>
+                    <a href="#" style={{ color: 'white', textDecoration: 'none' }}>Conditions</a>
+                    <a href="#" style={{ color: 'white', textDecoration: 'none' }}>Cookies</a>
+                  </div>
+                </div>
+                
+              </footer>
+                    <ScrollToTopButton />
+                    
+                    </div>
   );
 };
 

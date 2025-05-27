@@ -9,10 +9,11 @@ export default {
     });
   }, 
   async  addAnnee(annee) {
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth(); // janvier = 0
-  
+    const now = new Date();               // 2025-05-20
+const currentYear = now.getFullYear(); // 2025
+const currentMonth = now.getMonth();   // 4 (mai)
+// => validCurrentStartYear = 2024
+
     const regex = /^(\d{4})\/(\d{4})$/;
     const match = annee.match(regex);
   

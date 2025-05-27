@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import pkg from 'uuid';
 const { v4: uuidv4 } = pkg;
-
+import { serialize } from 'cookie';
 import { PrismaClient } from "@prisma/client";
 import jwt from 'jsonwebtoken';
 const prisma = new PrismaClient();
@@ -91,49 +91,101 @@ const register = async (req, res) => {
       return res.status(201).json({ message: "Un email de validation a été envoyé" });
     }
 
-    // Cas ECOLE
-    if (upperRole === ROLES.ECOLE) {
-      const ecole = await prisma.ecole_OFFICIAL.findFirst({ 
-        where: { 
-          emailEcole: email,  
-          nomEcole: name      
+     // Cas ECOLE
+if (upperRole === ROLES.ECOLE) {
+  try {
+    const { username, password, ecoleId, email, name, phone, roleEcole } = req.body;
+
+    // Validation des données
+    if (!ecoleId || !email || !name) {
+      return res.status(400).json({ 
+        error: "Données manquantes",
+        details: "ecoleId, email et name sont requis" 
+      });
+    }
+      let encryptedData, iv, address;
+
+    // Vérification de l'école officielle
+    const ecoleOfficielle = await prisma.ecole_OFFICIAL.findUnique({
+      where: { idEcole: parseInt(ecoleId) }
+    });
+
+    if (!ecoleOfficielle) {
+      return res.status(404).json({ 
+        error: "École non reconnue",
+        details: `Aucune école trouvée avec l'ID ${ecoleId}`
+      });
+    }
+
+    // Vérification de l'email
+    if (ecoleOfficielle.emailEcole.toLowerCase() !== email.toLowerCase()) {
+      return res.status(400).json({ 
+        error: "Email ne correspond pas à l'école",
+        details: `Email fourni: ${email}, Email officiel: ${ecoleOfficielle.emailEcole}`
+      });
+    }
+         
+
+     const wallet = web3.eth.accounts.create();
+        address = wallet.address;
+        const { encryptedData: enc, iv: encryptionIV } = encrypt(wallet.privateKey);
+        encryptedData = enc;
+        iv = encryptionIV;
+
+        
+    // Transaction atomique
+    const result = await prisma.$transaction(async (tx) => {
+      // 1. Création du compte
+      const nouveauCompte = await tx.account.create({
+        data: {
+          username,
+          email: ecoleOfficielle.emailEcole,
+          password: await bcrypt.hash(password, 10),
+          role: upperRole,
+          isVerified: false,
+          verificationToken: uuidv4()
         }
       });
-    
-      if (!ecole) {
-        return res.status(400).json({ error: "L'école n'est pas reconnue" });
-      }
-    
-      if (ecole.emailEcole !== email) {
-        return res.status(400).json({ error: "Les informations ne correspondent pas à l'école officielle" });
-      }    
 
-      await prisma.$transaction(async (tx) => {
-        const account = await tx.account.create({
-          data: {
-            username,
-            email,
-            password: hashedPassword,
-            role: upperRole,
-            isVerified: false,
-            verificationToken
-          }
-        });
-
-        await tx.ecole.create({
-          data: {
-            account: { connect: { id: account.id } },
-            nomEcole: name,
-            telephoneEcole: phone,
-            emailEcole: email,
-            role: roleEcole
-          }
-        });
+      // 2. Création de l'école
+      await tx.ecole.create({
+        data: {
+          nomEcole: ecoleOfficielle.nomEcole,
+          telephoneEcole: ecoleOfficielle.telephoneEcole,
+          emailEcole: ecoleOfficielle.emailEcole,
+          role: ecoleOfficielle.role,
+          accountId: nouveauCompte.id, 
+           adresseEcole: ecoleOfficielle.adresseEcole,
+           walletAddress: address,
+            walletPrivateKey: encryptedData,
+            walletIV: iv,
+        }
       });
 
-      await sendVerificationEmail(email, verificationToken);
-      return res.status(201).json({ message: "Un email de validation a été envoyé" });
-    }
+      return nouveauCompte;
+    });
+
+    // Envoi email de vérification
+    await sendVerificationEmail(result.email, result.verificationToken);
+
+    return res.status(201).json({ 
+      message: "Inscription réussie - Un email de validation a été envoyé",
+      email: result.email 
+    });
+
+  } catch (error) {
+    console.error("Erreur inscription école:", {
+      error: error.message,
+      stack: error.stack,
+      body: req.body
+    });
+    return res.status(500).json({ 
+      error: "Erreur technique",
+      details: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
+}
 
     // Cas STUDENT
     if (upperRole === ROLES.STUDENT) {
@@ -326,45 +378,51 @@ const account = await prisma.account.findFirst({
       });
     }
 
-    // Construction du payload du token
-    
+     // Construction du payload du token
     const tokenPayload = {
       accountId: account.id,
-      role: account.role,
+      role: account.role.toUpperCase(), // Force le rôle en majuscules
       email: account.email,
       username: account.username,
-      // Infos spécifiques à l'université
       ...(account.role === 'UNIVERSITY' && account.university && { 
         universityId: account.university.idUni,
         universityName: account.university.nomUni,
         walletAddress: account.university.walletAddress
       }),
-      // Infos spécifiques à l'école
-      ...(account.role === 'ECOLE' && account.ecole && { 
-        ecoleId: account.ecole.idEcole,
-        ecoleName: account.ecole.nomEcole
-      }),
-      // Infos spécifiques à l'étudiant
+      ...(account.role.toUpperCase() === 'ECOLE' && account.ecole && { 
+    ecoleId: account.ecole.idEcole,
+    ecoleName: account.ecole.nomEcole,
+    walletAddress: account.ecole.walletAddress ,// Ajoutez ceci si disponible
+    roleEcole: account.ecole.role
+  }),
       ...(account.role === 'STUDENT' && account.etudiant && { 
         studentId: account.etudiant.idEtudiant,
-        studentEmail : account.etudiant.email,
-        studentName : account.etudiant.nom,
-        studentPrenom : account.etudiant.prenom
-
+        studentEmail: account.etudiant.email,
+        studentName: account.etudiant.nom,
+        studentPrenom: account.etudiant.prenom
       }),
-      // Infos spécifiques à l'étudiant
       ...(account.role === 'MINISTERE' && account.ministere && { 
-        ministereId: account.ministere.id,
-        ministereName : account.ministere.nomMinistere
-      })
+  ministereId: account.ministere.id,
+  ministereName: account.ministere.nomMinistere,
+  ministereType: account.ministere.typeMinistere // Ajout de cette ligne
+})
     };
 
     // Génération du token JWT
-    const token = jwt.sign(
-      tokenPayload,
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" } // Expire dans 24 heures
-    );
+    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, {
+      expiresIn: "1d" // 24 heures
+    });
+
+
+    const cookie = serialize('token', token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  maxAge: 24 * 60 * 60, // en secondes (1 jour)
+  path: '/',
+  sameSite: 'strict',
+});
+
+res.setHeader('Set-Cookie', cookie);
 
     // Construction de la réponse
     const responseData = {
@@ -377,7 +435,6 @@ const account = await prisma.account.findFirst({
         username: account.username,
         role: account.role,
         isVerified: account.isVerified,
-        // Inclure les infos spécifiques au rôle
         ...(account.role === 'UNIVERSITY' && account.university && {
           university: {
             id: account.university.idUni,
@@ -394,21 +451,21 @@ const account = await prisma.account.findFirst({
         ...(account.role === 'STUDENT' && account.etudiant && {
           student: {
             id: account.etudiant.idEtudiant,
-            email : account.etudiant.email,
-           name : account.etudiant.nom,
-          prenom : account.etudiant.prenom
+            email: account.etudiant.email,
+            name: account.etudiant.nom,
+            prenom: account.etudiant.prenom
           }
         }),
         ...(account.role === 'MINISTERE' && account.ministere && {
-          student: {
+          ministere: {
             id: account.ministere.id,
-            name : account.ministere.nomMinistere
+            name: account.ministere.nomMinistere
           }
         })
       }
     };
 
-    // Définir le cookie HTTP Only si nécessaire
+    // Définir le cookie HTTP Only
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -416,21 +473,21 @@ const account = await prisma.account.findFirst({
       sameSite: 'strict'
     });
 
-    // Envoyer la réponse
+    // Envoi de la réponse finale
     res.status(200).json(responseData);
-    
+
   } catch (error) {
     console.error("Erreur lors de la connexion:", error);
-    
-    // Gestion des erreurs spécifiques
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+
+    // Gestion des erreurs Prisma
+    if (error instanceof prisma.PrismaClientKnownRequestError) {
       return res.status(500).json({ 
         success: false,
         error: "Erreur de base de données",
         code: error.code
       });
     }
-    
+
     res.status(500).json({ 
       success: false,
       error: "Erreur serveur lors de la connexion",
@@ -439,9 +496,32 @@ const account = await prisma.account.findFirst({
   }
 };
 
+
+// Contrôleur pour récupérer les écoles par rôle
+export const getEcolesAUTH = async (req, res) => {
+  try {
+    const { role } = req.query;
+
+    const whereClause = role 
+      ? { role } 
+      : {};
+
+    const ecoles = await prisma.ecole_OFFICIAL.findMany({
+      where: whereClause,
+      orderBy: { nomEcole: 'asc' }
+    });
+
+    res.status(200).json(ecoles);
+  } catch (error) {
+    console.error("Erreur:", error);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};
+
 export default {
   register,
   verifyEmail,
   getUniversitiesAUTH,
-  login
+  login, 
+  getEcolesAUTH
 };

@@ -19,7 +19,11 @@ import {
 const DiplomeUniversite = () => {
     // 1. Déclarez tous les hooks en premier
     const router = useRouter();
-    const { universityId } = router.query;
+    const { token} = router.query;
+    const { universityId} =  router.query;
+     console.log("🔐 token:", token);
+     console.log("🏫 universityId:", universityId);
+
     const [error, setError] = useState(null);
     const [diplomas, setDiplomas] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -27,20 +31,21 @@ const DiplomeUniversite = () => {
     const [selectedDiplomas, setSelectedDiplomas] = useState([]);
     
 
+  
     const colors = {
-      primary: '#2F855A',       // Vert validation – sérieux, rassurant
-      secondary: '#2D3748',     // Gris charbon – autorité, modernité
-      accent: '#38A169',        // Vert accent – pour boutons/CTA
-      lightBg: '#F7FAFC',       // Fond clair neutre – pro et clean
-      darkBg: '#1A202C',        // Fond sombre – header/footer élégant
-      textDark: '#1C1C1C',      // Texte principal – bonne lisibilité
-      textLight: '#718096',     // Texte secondaire – descriptions, placeholders
-      border: '#CBD5E0',        // Bordures subtiles – pour structurer sans surcharger
-      success: '#2F855A',       // Succès – même que primary pour cohérence
-      error: '#C53030',         // Erreur – rouge sérieux
-      warning: '#D69E2E'        // Avertissement – or doux, pas criard
-    };
-    
+  primary: '#1E3A8A',       // Bleu roi – confiance, autorité, prestige
+  secondary: '#2D3748',     // Gris foncé – modernité, sobriété
+  accent: '#1E3A8A',        // Bleu clair – boutons, interactions (hover/CTA)
+  lightBg: '#F9FAFB',       // Fond clair – propre, neutre
+  darkBg: '#1A202C',        // Fond sombre – header, footer, élégance
+  textDark: '#111827',      // Texte principal – lisible, sérieux
+  textLight: '#6B7280',     // Texte secondaire – descriptions, placeholders
+  border: '#E5E7EB',        // Bordures discrètes – pour structurer sans surcharger
+  success: '#16A34A',       // Vert succès – confirmation d’action réussie
+  error: '#DC2626',         // Rouge erreur – sérieux sans être agressif
+  warning: '#F59E0B'        // Jaune doux – signal d’attention maîtrisé
+};
+
   
     // Couleurs par type de diplôme
     const diplomaTypeColors = {
@@ -57,12 +62,7 @@ const DiplomeUniversite = () => {
       'DIPLOME D\'INGENIEUR': <FaIdCard />
     };
   
-     // Récupération du token
-     const token = typeof window !== 'undefined' 
-     ? localStorage.getItem('ministere_token') 
-     : null;
-     const safeToken = encodeURIComponent(token || ''); 
-
+    
      
     // 2. Ensuite les effets
     useEffect(() => {
@@ -106,12 +106,8 @@ const DiplomeUniversite = () => {
       if (!token || !universityInfo?.idUni) return;
       
       router.push(`/ministry/${token}/DiplomesValides?universityId=${universityInfo.idUni}`);
-      // OU mieux : utilisez le routing de Next.js sans paramètre d'URL
-      router.push({
-        pathname: `/ministry/${token}/DiplomesValides`,
-        query: { universityId: universityInfo.idUni }
-      });
-    };
+       };
+    ;
 
     
     const handleValidate = async (diplomaId) => {
@@ -228,7 +224,7 @@ const DiplomeUniversite = () => {
           fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
           paddingBottom: '3rem'
         }}>
-          <HeaderMinistry />
+          <HeaderMinistry token={token} />
       
           {/* Contenu principal avec effet de profondeur */}
           <div style={{
@@ -255,39 +251,52 @@ const DiplomeUniversite = () => {
      <div style={{
       display: 'flex',
       alignItems: 'center',
-      gap: '0.3rem',
+      gap: '1rem',
      
        }}>
-       {/* Bouton Retour - Version améliorée */}
-  <motion.button
-    whileHover={{ 
-      backgroundColor: `${colors.primary}08`,
-      transform: 'translateY(-1px)'
-    }}
-    whileTap={{ scale: 0.98 }}
-    onClick={() => router.back()}
-    style={{
-      backgroundColor: 'transparent',
-      color: colors.primary,
-      border: `1px solid ${colors.primary}50`,
-      borderRadius: '8px',
-      padding: '0.5rem 0,5rem',
-      fontSize: '0.82rem',
-      fontWeight: '500',
-      cursor: 'pointer',
-      transition: 'all 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.2rem',
-      minWidth: '50px',
-      justifyContent: 'center'
-    }}
+ <motion.button
+  whileHover={{
+    backgroundColor: `${colors.primary}08`,
+    y: -1
+  }}
+  whileTap={{ scale: 0.98 }}
+  onClick={() => router.back()}
+  style={{
+    backgroundColor: 'transparent',
+    color: colors.primary,
+    border: `1px solid ${colors.primary}50`,
+    borderRadius: '8px',
+    padding: '0.5rem 0.6rem',
+    fontSize: '0.82rem',
+    fontWeight: 500,
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '0.4rem',
+    transition: 'all 0.2s ease-in-out',
+    boxShadow: 'none'
+  }}
+>
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{ flexShrink: 0 }}
   >
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0 }}>
-      <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  
-  </motion.button>
+    <path
+      d="M19 12H5M5 12L12 19M5 12L12 5"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+ 
+</motion.button>
+
       <div>
         <div style={{
           fontSize: '0.8rem',
@@ -357,7 +366,7 @@ const DiplomeUniversite = () => {
       transform: 'translateY(-1px)'
     }}
     whileTap={{ scale: 0.98 }}
-    onClick={handleDiplomeValidesClick}
+   onClick={() => router.push(`/ministry/${token}/DiplomesValides?universityId=${universityId}`)}
     style={{
       backgroundColor: 'transparent',
       color: colors.accent,

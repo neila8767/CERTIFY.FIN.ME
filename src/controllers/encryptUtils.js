@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-const algorithm = 'aes-256-ctr';
+const algorithm = 'aes-256-ctr' ;
 // Clé de 32 bytes (256 bits) — à garder secrète (idéalement dans une variable d'environnement)
 const secretKey = crypto.createHash('sha256').update('votre_super_clé_secrète').digest(); // Ne jamais exposer ça !
 

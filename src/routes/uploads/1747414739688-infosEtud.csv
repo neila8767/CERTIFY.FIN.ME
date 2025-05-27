@@ -1,0 +1,7 @@
+nom,prenom,email,matricule,telephone,dateNaissance,lieuNaissance,section,groupe,filiere,specialite,niveau,moyenneAnnuelle
+Sow,Abdou,abdou.sow@email.com,MAT20230006,699000006,2003-05-10,Dakar,B,1,Informatique,Développement,1,18.5
+Ndiaye,Sana,sana.ndiaye@email.com,MAT20230007,699000007,2002-06-25,Dakar,A,2,Physique,Optique,2,19.0
+Zahra,Yasmina,yasmina.zahra@email.com,MAT20230008,699000008,2001-12-14,Alger,B,3,Chimie,Analytique,3,17.5
+Diop,Mamadou,mamadou.diop@email.com,MAT20230009,699000009,2000-11-02,Dakar,A,4,Economie,Finance,4,16.8
+Bamba,Ousmane,ousmane.bamba@email.com,MAT20230010,699000010,2002-02-19,Abidjan,B,1,Mathématiques,Algèbre,1,20.0
+Toure,Aissatou,aissatou.toure@email.com,MAT20230011,699000011,2003-03-23,Conakry,A,2,Informatique,Systèmes,2,19.5

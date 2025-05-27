@@ -1,0 +1,16 @@
+nom,prenom,email,matricule,telephone,dateNaissance,lieuNaissance,section,groupe,filiere,specialite,niveau,moyenneAnnuelle
+Sow,Abdou,abdou.sow@email.com,MAT20230006,699030006,2003-05-10,Dakar,B,1,Informatique,ISIL,3,18.5
+LARBI,OUSSAMA,oussama.larbi@email.com,MAT202300022,699040022,2003-05-10,Alger,B,1,Informatique,ISIL,3,17.5
+TEDJINI,ABD EL MONCEF,abd.el.moncef.tedjini@email.com,MAT202300026,699000026,2003-05-10,Alger,B,1,Informatique,ISIL,3,17.5
+CHERIF,MANEL,manel.cherif@email.com,MAT202300015,699003015,2003-05-10,Alger,B,1,Informatique,ISIL,3,17
+GHEMATI,CHAIMA,chaima.ghemati@email.com,MAT202300018,699040018,2003-05-10,Alger,B,1,Informatique,ISIL,3,18
+ACHIR,ROUMAISSA,roumaissa.achir@email.com,MAT202300003,699500003,2003-05-10,Alger,B,1,Informatique,ISIL,3,16.5
+BENKOUIDER,WISSAL,wissal.benkouider@email.com,MAT202300011,699500011,2003-05-10,Alger,B,1,Informatique,ISIL,3,16
+BOULOUFA,TAREK AREZKI,tarek.arezki.bouloufa@email.com,MAT202300013,699050013,2003-05-10,Alger,B,1,Informatique,ISIL,3,16
+MENTIZI,RAYANE RAFIK,rayane.rafik.mentizi@email.com,MAT202300024,699504024,2003-05-10,Alger,B,1,Informatique,ISIL,3,16.5
+MASSOUM,MAHIEDDINEMONCEF,mahieddinemoncef.massoum@email.com,MAT202300023,699000023,2003-05-10,Alger,B,1,Informatique,ISIL,3,16.5
+AIT MOULOUD,SAMIA,samia.aitmouloud@email.com,MAT202300007,699000007,2003-05-10,Alger,B,1,Informatique,ISIL,3,15
+DJEGHLAF,SOHEIB,soheib.djeghlaf@email.com,MAT202300016,699000016,2003-05-10,Alger,B,1,Informatique,ISIL,3,15
+HAMITI,MOHAMED NADIR,mohamed.nadir.hamiti@email.com,MAT202300020,699000020,2003-05-10,Alger,B,1,Informatique,ISIL,3,17
+BOUFERMACHE,ROFEIDA,rofeida.boufermache@email.com,MAT202300014,699000014,2003-05-10,Alger,B,1,Informatique,ISIL,3,18
+KHALEF,DOUAA,douaa.khalef@email.com,MAT202300021,699000021,2003-05-10,Alger,B,1,Informatique,ISIL,3,16.5

@@ -72,8 +72,9 @@ const PartnersSection = () => {
   return (
     <section className="w-full py-16 bg-gradient-to-b from-[#F5F5F5] to-[#E0E7FF]">
       <div className="max-w-6xl mx-auto px-4 text-center">
-        <motion.h2 
-          className="text-2xl md:text-3xl font-bold text-gray-800 mb-10"
+       <div className="max-w-[70%] mx-auto px-4 text-center">
+       <motion.h2 
+          className="text-2xl md:text-2xl font-bold text-gray-800 mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -85,7 +86,8 @@ const PartnersSection = () => {
         
 
         </motion.h2>
-
+            </div>
+        
         <div className="relative w-full h-48 overflow-hidden">
 <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-10" />
 

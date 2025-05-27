@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client'
-
 export default async function etudiantsMinistereSeeder(prisma: PrismaClient) {
   await prisma.etudiantMinistere.createMany({
     data: [
@@ -91,6 +90,95 @@ export default async function etudiantsMinistereSeeder(prisma: PrismaClient) {
         dateNaissance: new Date('2003-03-23'),
         lieuNaissance: 'Conakry',
       },
+      // Étudiants ajoutés à partir du CSV
+      {
+        nom: 'Aktoùche',
+        prenom: 'Anis',
+        email: 'anis.aktouche@email.com',
+        matricule: 'MAT20230008',
+        dateNaissance: new Date('2003-05-10'),
+        lieuNaissance: 'Alger',
+      },
+      {
+        nom: 'Cherif',
+        prenom: 'Manel',
+        email: 'manel.cherif@email.com',
+        matricule: 'MAT20230013',
+        dateNaissance: new Date('2003-05-10'),
+        lieuNaissance: 'Alger',
+      },
+      {
+        nom: 'Larbi',
+        prenom: 'Oussama',
+        email: 'oussama.larbi@email.com',
+        matricule: 'MAT20230014',
+        dateNaissance: new Date('2003-05-10'),
+        lieuNaissance: 'Alger',
+      },
+      {
+        nom: 'Khalef',
+        prenom: 'Douaa',
+        email: 'douaa.khalef@email.com',
+        matricule: 'MAT20230015',
+        dateNaissance: new Date('2003-05-10'),
+        lieuNaissance: 'Alger',
+      },
+      {
+        nom: 'Ghemati',
+        prenom: 'Chaima',
+        email: 'chaima.ghemati@email.com',
+        matricule: 'MAT20230016',
+        dateNaissance: new Date('2003-05-10'),
+        lieuNaissance: 'Alger',
+      },
+      {
+        nom: 'Guéracḥa',
+        prenom: 'Ramzi Wassim',
+        email: 'ramzi.wassim.gueracha@email.com',
+        matricule: 'MAT20230017',
+        dateNaissance: new Date('2003-05-10'),
+        lieuNaissance: 'Alger',
+      },
+      {
+        nom: 'Sayah',
+        prenom: 'Khadidja',
+        email: 'khadidja.sayah@email.com',
+        matricule: 'MAT20230018',
+        dateNaissance: new Date('2003-05-10'),
+        lieuNaissance: 'Alger',
+      },
+      {
+        nom: 'Tedjini',
+        prenom: 'Abd El Moncef',
+        email: 'abd.el.moncef.tedjini@email.com',
+        matricule: 'MAT20230019',
+        dateNaissance: new Date('2003-05-10'),
+        lieuNaissance: 'Alger',
+      },
+      {
+        nom: 'Massoum',
+        prenom: 'Mahieddinemoncef',
+        email: 'mahieddinemoncef.massoum@email.com',
+        matricule: 'MAT20230020',
+        dateNaissance: new Date('2003-05-10'),
+        lieuNaissance: 'Alger',
+      },
+      {
+        nom: 'Hamiti',
+        prenom: 'Mohamed Nadir',
+        email: 'mohamed.nadir.hamiti@email.com',
+        matricule: 'MAT20230021',
+        dateNaissance: new Date('2003-05-10'),
+        lieuNaissance: 'Alger',
+      },
+      {
+        nom: 'Dziri',
+        prenom: 'Mohammed Idir',
+        email: 'mohammed.idir.dziri@email.com',
+        matricule: 'MAT20230022',
+        dateNaissance: new Date('2003-05-10'),
+        lieuNaissance: 'Alger',
+      }
     ],
     skipDuplicates: true
   })

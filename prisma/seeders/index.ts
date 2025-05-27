@@ -9,6 +9,7 @@ import etudiantsMinistereSeeder from './etudiantsMinistere.seeder.ts'
 import universityOfficialSeeder from './universityOFF.seeder.ts'
 import ecolesSeeder from './ecole.seeder.ts'
 import accountSeeder from './account.seeder.ts'
+import modelesDiplome from './modelesDiplome.seeder.ts'
 
 
 const main = async () => {
@@ -18,11 +19,7 @@ const main = async () => {
 
   try {
     console.log('🧹 Nettoyage des données existantes...')
-  
-    await prisma.etudiantMinistere.deleteMany()
-  
-     console.log('🌱 Insertion des nouvelles données...')
-    await etudiantsMinistereSeeder(prisma)
+    await etudiantsMinistereSeeder(prisma)     
     
     console.log('✅ Base de données initialisée avec succès!')
   } catch (error) {

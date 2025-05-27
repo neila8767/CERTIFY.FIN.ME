@@ -2,10 +2,17 @@ import express from 'express';
 import cors from 'cors';
 import apiRoutes from './src/routes/api.js';
 import './src/controllers/cleanupExpiredAccounts.js';
-import { prisma } from "./src/prismaClient.js"; // Mets Prisma dans un fichier séparé
+import { prisma } from "./src/prismaClient.js";
+import errorHandler from './src/controllers/errorHandler.js'; // Mets Prisma dans un fichier séparé
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 
 const app = express();
 const port = 5000;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Lancer le nettoyage immédiatement au démarrage
 setInterval(async () => {
@@ -46,9 +53,24 @@ app.use(async (req, res, next) => {
     }
   }
 });
-
+app.use('/ModelesDiplome', express.static(path.join(__dirname, 'ModelesDiplome')));
 // ✅ ROUTES API
 app.use('/', apiRoutes);
+
+
+// Middleware global de gestion des erreurs
+
+app.use((err, req, res, next) => {
+  const statusCode = err.status || 500;
+  const errorMessage = err.message || "Erreur interne du serveur";
+
+  if (process.env.NODE_ENV !== 'production') {
+    console.error("Erreur backend :", err.message);
+  }
+
+  res.status(statusCode).json({ error: errorMessage });
+});
+
 
 app.listen(port, () => {
   console.log(`Serveur démarré sur http://localhost:${port}`);

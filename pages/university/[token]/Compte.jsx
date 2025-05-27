@@ -2,26 +2,28 @@ import { useRouter } from 'next/router';
  import axios from 'axios';
  import Header from '../../../components/HeaderUniversity.jsx';
 import React, { useState, useRef, useEffect  } from 'react';
-import { FaSignOutAlt, FiUser, FiLock, FiCamera, FiCreditCard, FiBell, FiShield, FiLink, FiUpload } from 'react-icons/fi';
+import { FaSignOutAlt, FiX, FiEyeOff, FiUser, FiLock, FiCamera, FiCreditCard, FiImage, FiKey, FiEye,   FiBell, FiShield, FiLink, FiUpload , FiDollarSign , FiLogOut , FiInfo , FiEdit2, FiSave} from 'react-icons/fi';
 import { MdLogout } from "react-icons/md"; // Icône Material Design
+import { motion } from 'framer-motion';
     
 const Compte = () => {
     const router = useRouter();
    const { token } = router.query;
-  // Palette de couleurs
-  const colors = {
-    primary: '#2F855A',
-    secondary: '#2D3748',
-    accent: '#38A169',
-    lightBg: '#F7FAFC',
-    darkBg: '#1A202C',
-    textDark: '#1C1C1C',
-    textLight: '#718096',
-    border: '#CBD5E0',
-    success: '#2F855A',
-    error: '#C53030',
-    warning: '#D69E2E'
-  };
+
+
+    const colors = {
+  primary: '#1E3A8A',       // Bleu roi – confiance, autorité, prestige
+  secondary: '#2D3748',     // Gris foncé – modernité, sobriété
+  accent: '#1E3A8A',        // Bleu clair – boutons, interactions (hover/CTA)
+  lightBg: '#F9FAFB',       // Fond clair – propre, neutre
+  darkBg: '#1A202C',        // Fond sombre – header, footer, élégance
+  textDark: '#111827',      // Texte principal – lisible, sérieux
+  textLight: '#6B7280',     // Texte secondaire – descriptions, placeholders
+  border: '#E5E7EB',        // Bordures discrètes – pour structurer sans surcharger
+  success: '#16A34A',       // Vert succès – confirmation d’action réussie
+  error: '#DC2626',         // Rouge erreur – sérieux sans être agressif
+  warning: '#F59E0B'        // Jaune doux – signal d’attention maîtrisé
+};
 
      const handleLogout = () => {
     localStorage.removeItem('uni_token');
@@ -42,6 +44,10 @@ const Compte = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+ const [showNewPassword, setShowNewPassword] = useState(false);
+   
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -251,150 +257,400 @@ const Compte = () => {
     }
   };
 
-  const renderTabContent = () => {
-    switch(activeTab) {
-      case 'profile':
-        return (
-     <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
-      <div style={{ marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '1.5rem', margin: '0 0 1rem 0', color: colors.secondary }}>Profile</h2>
-        <p style={{ color: colors.textLight, margin: '0 0 1.5rem 0' }}>Information about yourself</p>
-        
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: colors.secondary }}>Basics</label>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1rem' }}>
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleInputChange}
-              placeholder="Username"
-              style={{ 
-                padding: '0.75rem', 
-                border: `1px solid ${isEditing ? colors.primary : colors.border}`,
-                borderRadius: '4px', 
-                fontSize: '1rem', 
-                marginBottom: '0.5rem',
-                transition: 'border 0.2s'
-              }}
-            />
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              placeholder="Email"
-              style={{ 
-                padding: '0.75rem', 
-                border: `1px solid ${isEditing ? colors.primary : colors.border}`,
-                borderRadius: '4px', 
-                fontSize: '1rem', 
-                marginBottom: '0.5rem',
-                transition: 'border 0.2s'
-              }}
-            />
-            <input
-              type="tel"
-              name="telephone"
-              value={formData.telephone}
-              onChange={handleInputChange}
-              placeholder="Telephone"
-              style={{ 
-                padding: '0.75rem', 
-                border: `1px solid ${isEditing ? colors.primary : colors.border}`,
-                borderRadius: '4px', 
-                fontSize: '1rem', 
-                marginBottom: '0.5rem',
-                transition: 'border 0.2s'
-              }}
-            />
-             <input
-              type="text"
-              name="nom"
-              value={formData.nom}
-              onChange={handleInputChange}
-              placeholder="nom etablissement"
-              style={{ 
-                padding: '0.75rem', 
-                border: `1px solid ${isEditing ? colors.primary : colors.border}`,
-                borderRadius: '4px', 
-                fontSize: '1rem', 
-                marginBottom: '0.5rem',
-                transition: 'border 0.2s'
-              }}
-            />
-             <input
-              type="text"
-              name="adresse"
-              value={formData.adresse}
-              onChange={handleInputChange}
-              placeholder="adresse de l'etablissement"
-              style={{ 
-                padding: '0.75rem', 
-                border: `1px solid ${isEditing ? colors.primary : colors.border}`,
-                borderRadius: '4px', 
-                fontSize: '1rem', 
-                marginBottom: '0.5rem',
-                transition: 'border 0.2s'
-              }}
-            />
-            
-          </div>
-        </div>
-        
-        {successMessage && (
-          <div style={{ 
-            color: colors.success, 
-            marginBottom: '1rem',
-            padding: '0.5rem',
-            backgroundColor: `${colors.success}20`,
-            borderRadius: '4px'
-          }}>
-            {successMessage}
-          </div>
-        )}
-        
-         <button 
-        type="submit" 
-        disabled={!isEditing || isLoading}
-        style={{ 
-          backgroundColor: isEditing ? colors.primary : colors.accent,
-          color: 'white', 
-          border: 'none', 
-          padding: '0.75rem 1.5rem', 
-          borderRadius: '4px', 
-          fontSize: '1rem', 
-          cursor: isEditing ? 'pointer' : 'not-allowed',
-          transition: 'background-color 0.2s',
-          opacity: isLoading ? 0.7 : 1
-        }}
-        onMouseOver={(e) => isEditing && (e.target.style.backgroundColor = colors.primary)}
-        onMouseOut={(e) => isEditing && (e.target.style.backgroundColor = colors.primary)}
-      >
-        {isLoading ? 'Enregistrement...' : 'Sauvegarder'}
-      </button>
-      </div>
-    </form>
-        );
+ const renderTabContent = () => {
+  switch(activeTab) {
+    case 'profile':
+      return (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
+            <div style={{ marginBottom: '2rem' }}>
+              <div style={{ 
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                marginBottom: '2rem',
+                paddingBottom: '1.5rem',
+                borderBottom: `1px solid ${colors.border}`
+              }}>
+                <div style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '12px',
+                  background: `linear-gradient(135deg, ${colors.lightBg}, ${colors.border})`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <FiUser size={24} color={colors.primary} />
+                </div>
+                <div>
+                  <h2 style={{ 
+                    fontSize: '1.75rem',
+                    fontWeight: '500',
+                    margin: 0,
+                    color: colors.textDark
+                  }}>
+                    Profil Utilisateur
+                  </h2>
+                  <p style={{ 
+                    fontSize: '0.9rem',
+                    color: colors.textLight,
+                    margin: 0
+                  }}>
+                    Gérer vos informations personnelles
+                  </p>
+                </div>
+              </div>
 
-      case 'photo':
-        return (
+              <div style={{ 
+                backgroundColor: colors.lightBg,
+                borderRadius: '8px',
+                padding: '1.5rem',
+                border: `1px solid ${colors.border}`,
+                marginBottom: '1.5rem'
+              }}>
+                <h3 style={{ 
+                  fontSize: '1.1rem',
+                  fontWeight: '600',
+                  margin: '0 0 1rem 0',
+                  color: colors.textDark,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}>
+                  <FiInfo size={18} color={colors.primary} />
+                  Informations de base
+                </h3>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      marginBottom: '0.5rem', 
+                      fontSize: '0.875rem',
+                      fontWeight: '500', 
+                      color: colors.textDark 
+                    }}>
+                      Nom d'utilisateur
+                    </label>
+                    <input
+                      type="text"
+                      name="username"
+                      value={formData.username}
+                      onChange={handleInputChange}
+                      style={{ 
+                        width: '90%',
+                        padding: '0.75rem', 
+                        border: `1px solid ${isEditing ? colors.primary : colors.border}`,
+                        borderRadius: '6px', 
+                        fontSize: '0.95rem',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = colors.primary;
+                        e.target.style.boxShadow = `0 0 0 2px ${colors.primary}20`;
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = colors.border;
+                        e.target.style.boxShadow = 'none';
+                      }}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      marginBottom: '0.5rem', 
+                      fontSize: '0.875rem',
+                      fontWeight: '500', 
+                      color: colors.textDark 
+                    }}>
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      style={{ 
+                        width: '90%',
+                        padding: '0.75rem', 
+                        border: `1px solid ${isEditing ? colors.primary : colors.border}`,
+                        borderRadius: '6px', 
+                        fontSize: '0.95rem',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = colors.primary;
+                        e.target.style.boxShadow = `0 0 0 2px ${colors.primary}20`;
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = colors.border;
+                        e.target.style.boxShadow = 'none';
+                      }}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      marginBottom: '0.5rem', 
+                      fontSize: '0.875rem',
+                      fontWeight: '500', 
+                      color: colors.textDark 
+                    }}>
+                      Téléphone
+                    </label>
+                    <input
+                      type="tel"
+                      name="telephone"
+                      value={formData.telephone}
+                      onChange={handleInputChange}
+                      style={{ 
+                        width: '90%',
+                        padding: '0.75rem', 
+                        border: `1px solid ${isEditing ? colors.primary : colors.border}`,
+                        borderRadius: '6px', 
+                        fontSize: '0.95rem',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = colors.primary;
+                        e.target.style.boxShadow = `0 0 0 2px ${colors.primary}20`;
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = colors.border;
+                        e.target.style.boxShadow = 'none';
+                      }}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      marginBottom: '0.5rem', 
+                      fontSize: '0.875rem',
+                      fontWeight: '500', 
+                      color: colors.textDark 
+                    }}>
+                      Nom de l'établissement
+                    </label>
+                    <input
+                      type="text"
+                      name="nom"
+                      value={formData.nom}
+                      onChange={handleInputChange}
+                      style={{ 
+                        width: '90%',
+                        padding: '0.75rem', 
+                        border: `1px solid ${isEditing ? colors.primary : colors.border}`,
+                        borderRadius: '6px', 
+                        fontSize: '0.95rem',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = colors.primary;
+                        e.target.style.boxShadow = `0 0 0 2px ${colors.primary}20`;
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = colors.border;
+                        e.target.style.boxShadow = 'none';
+                      }}
+                    />
+                  </div>
+                  
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <label style={{ 
+                      display: 'block', 
+                      marginBottom: '0.5rem', 
+                      fontSize: '0.875rem',
+                      fontWeight: '500', 
+                      color: colors.textDark 
+                    }}>
+                      Adresse de l'établissement
+                    </label>
+                    <input
+                      type="text"
+                      name="adresse"
+                      value={formData.adresse}
+                      onChange={handleInputChange}
+                      style={{ 
+                        width: '90%',
+                        padding: '0.75rem', 
+                        border: `1px solid ${isEditing ? colors.primary : colors.border}`,
+                        borderRadius: '6px', 
+                        fontSize: '0.95rem',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = colors.primary;
+                        e.target.style.boxShadow = `0 0 0 2px ${colors.primary}20`;
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = colors.border;
+                        e.target.style.boxShadow = 'none';
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              {successMessage && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  style={{
+                    padding: '1rem',
+                    backgroundColor: `${colors.success}10`,
+                    borderRadius: '6px',
+                    border: `1px solid ${colors.success}`,
+                    marginBottom: '1.5rem',
+                    color: colors.textDark
+                  }}
+                >
+                  <p style={{ margin: '0', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <FiCheckCircle color={colors.success} /> {successMessage}
+                  </p>
+                </motion.div>
+              )}
+              
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="button"
+                  onClick={() => setIsEditing(!isEditing)}
+                  style={{
+                    padding: '0.75rem 1.5rem',
+                    backgroundColor: 'white',
+                    color: colors.textDark,
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <FiEdit2 size={16} />
+                  {isEditing ? 'Annuler' : 'Modifier'}
+                </motion.button>
+                
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  disabled={!isEditing || isLoading}
+                  style={{
+                    padding: '0.75rem 1.5rem',
+                    backgroundColor: isEditing ? colors.primary : `${colors.primary}80`,
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: isEditing ? 'pointer' : 'not-allowed',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    opacity: isLoading ? 0.7 : 1
+                  }}
+                >
+                  {isLoading ? (
+                    <>
+                      <FiLoader className="animate-spin" size={16} />
+                      Enregistrement...
+                    </>
+                  ) : (
+                    <>
+                      <FiSave size={16} />
+                      Sauvegarder
+                    </>
+                  )}
+                </motion.button>
+              </div>
+            </div>
+          </form>
+        </motion.div>
+      );
+
+    case 'photo':
+      return (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
           <div>
-             <h2 style={{ fontSize: '1.5rem', margin: '0 0 1rem 0', color: colors.secondary }}>Photo</h2>
-              <p style={{ color: colors.textLight, margin: '0 0 1.5rem 0' }}> Add a nice photo of yourself for your profile.</p>
-            
             <div style={{ 
-              borderTop: `1px solid ${colors.border}`, 
-              paddingTop: '1.5rem',
-              marginBottom: '2rem'
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1rem',
+              marginBottom: '2rem',
+              paddingBottom: '1.5rem',
+              borderBottom: `1px solid ${colors.border}`
             }}>
-              <h2 style={{ fontSize: '1.3rem', marginBottom: '1rem', color: colors.secondary }}>Image preview</h2>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '12px',
+                background: `linear-gradient(135deg, ${colors.lightBg}, ${colors.border})`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <FiCamera size={24} color={colors.primary} />
+              </div>
+              <div>
+                <h2 style={{ 
+                  fontSize: '1.75rem',
+                  fontWeight: '500',
+                  margin: 0,
+                  color: colors.textDark
+                }}>
+                  Photo de profil
+                </h2>
+                <p style={{ 
+                  fontSize: '0.9rem',
+                  color: colors.textLight,
+                  margin: 0
+                }}>
+                  Mettez à jour votre photo de profil
+                </p>
+              </div>
+            </div>
+
+            <div style={{ 
+              backgroundColor: colors.lightBg,
+              borderRadius: '8px',
+              padding: '1.5rem',
+              border: `1px solid ${colors.border}`,
+              marginBottom: '1.5rem'
+            }}>
+              <h3 style={{ 
+                fontSize: '1.1rem',
+                fontWeight: '600',
+                margin: '0 0 1rem 0',
+                color: colors.textDark,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                <FiImage size={18} color={colors.primary} />
+                Prévisualisation
+              </h3>
               
               <div style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: '2rem',
-                marginBottom: '2rem'
+                marginBottom: '1.5rem'
               }}>
                 <div style={{
                   width: '150px',
@@ -405,7 +661,8 @@ const Compte = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   overflow: 'hidden',
-                  border: `1px dashed ${colors.border}`
+                  border: `1px dashed ${colors.border}`,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
                 }}>
                   {formData.photoPreview ? (
                     <img 
@@ -418,362 +675,583 @@ const Compte = () => {
                       }} 
                     />
                   ) : (
-                    <FiCamera style={{ fontSize: '2rem', color: colors.textLight }} />
+                    <FiUser size={48} color={colors.textLight} />
                   )}
                 </div>
 
-                <div>
-                  <label style={{
-                    display: 'inline-block',
-                    marginBottom: '0.5rem',
-                    fontWeight: '500'
-                  }}>
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      onChange={handlePhotoChange}
-                      style={{ display: 'none' }} 
-                      ref={fileInputRef}
-                    />
-                    <span style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      color: colors.accent,
-                      cursor: 'pointer'
-                    }} onClick={() => fileInputRef.current.click()}>
-                      <FiUpload /> Add / Change Image
-                    </span>
-                  </label>
-                  <p style={{ color: colors.textLight, fontSize: '0.9rem', marginBottom: '1rem' }}>
-                    {formData.profilePhoto ? formData.profilePhoto.name : 'No file selected'}
-                  </p>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+                    <motion.label
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        padding: '0.5rem 1rem',
+                        backgroundColor: 'white',
+                        color: colors.accent,
+                        border: `1px solid ${colors.accent}`,
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontSize: '0.875rem',
+                        fontWeight: '500'
+                      }}
+                    >
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={handlePhotoChange}
+                        style={{ display: 'none' }} 
+                        ref={fileInputRef}
+                      />
+                      <FiUpload size={16} />
+                      Choisir une image
+                    </motion.label>
+                    
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={handleUploadPhoto}
+                      style={{
+                        padding: '0.5rem 1rem',
+                        backgroundColor: colors.primary,
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        fontSize: '0.875rem',
+                        fontWeight: '500'
+                      }}
+                      disabled={!formData.profilePhoto}
+                    >
+                      <FiUpload size={16} />
+                      Téléverser
+                    </motion.button>
+                  </div>
                   
-                  <button
-                    onClick={handleUploadPhoto}
-                    style={{
-                      backgroundColor: colors.accent,
-                      color: 'white',
-                      border: 'none',
-                      padding: '0.6rem 1.2rem',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      fontSize: '0.9rem',
-                      transition: 'background-color 0.2s'
-                    }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = colors.primary}
-                    onMouseOut={(e) => e.target.style.backgroundColor = colors.accent}
-                  >
-                    <FiUpload /> Upload image
-                  </button>
+                  <p style={{ 
+                    color: colors.textLight, 
+                    fontSize: '0.85rem', 
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}>
+                    {formData.profilePhoto ? (
+                      <>
+                        <FiFile size={14} />
+                        {formData.profilePhoto.name}
+                      </>
+                    ) : (
+                      'Aucun fichier sélectionné'
+                    )}
+                  </p>
                 </div>
+              </div>
+              
+              <div style={{ 
+                backgroundColor: 'white',
+                borderRadius: '6px',
+                padding: '1rem',
+                border: `1px solid ${colors.border}`
+              }}>
+                <h4 style={{ 
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  margin: '0 0 0.5rem 0',
+                  color: colors.textDark
+                }}>
+                  Recommandations
+                </h4>
+                <ul style={{ 
+                  fontSize: '0.85rem',
+                  color: colors.textLight,
+                  margin: 0,
+                  paddingLeft: '1.25rem'
+                }}>
+                  <li>Format JPG, PNG ou GIF</li>
+                  <li>Taille minimale de 200x200 pixels</li>
+                  <li>Taille maximale de 5MB</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      );
+
+    case 'security':
+      return (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div>
+            <div style={{ 
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1rem',
+              marginBottom: '2rem',
+              paddingBottom: '1.5rem',
+              borderBottom: `1px solid ${colors.border}`
+            }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '12px',
+                background: `linear-gradient(135deg, ${colors.lightBg}, ${colors.border})`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <FiLock size={24} color={colors.primary} />
+              </div>
+              <div>
+                <h2 style={{ 
+                  fontSize: '1.75rem',
+                  fontWeight: '500',
+                  margin: 0,
+                  color: colors.textDark
+                }}>
+                  Sécurité du compte
+                </h2>
+                <p style={{ 
+                  fontSize: '0.9rem',
+                  color: colors.textLight,
+                  margin: 0
+                }}>
+                  Gérer votre mot de passe et sécurité
+                </p>
               </div>
             </div>
 
             <div style={{ 
-              display: 'flex', 
-              justifyContent: 'flex-end',
-              borderTop: `1px solid ${colors.border}`,
-              paddingTop: '1.5rem'
+              backgroundColor: colors.lightBg,
+              borderRadius: '8px',
+              padding: '1.5rem',
+              border: `1px solid ${colors.border}`,
+              marginBottom: '1.5rem'
             }}>
-              <button
-                style={{
-                  backgroundColor: colors.accent,
-                  color: 'white',
-                  border: 'none',
-                  padding: '0.75rem 1.5rem',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '1rem',
-                  transition: 'background-color 0.2s'
-                }}
-                onClick={handleSubmit}
-                onMouseOver={(e) => e.target.style.backgroundColor = colors.primary}
-                onMouseOut={(e) => e.target.style.backgroundColor = colors.accent}
-              >
-                Save
-              </button>
+              <h3 style={{ 
+                fontSize: '1.1rem',
+                fontWeight: '600',
+                margin: '0 0 1rem 0',
+                color: colors.textDark,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                <FiKey size={18} color={colors.primary} />
+                Changer le mot de passe
+              </h3>
+              
+              {passwordForm.error && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  style={{
+                    padding: '1rem',
+                    backgroundColor: `${colors.error}10`,
+                    borderRadius: '6px',
+                    border: `1px solid ${colors.error}`,
+                    marginBottom: '1.5rem',
+                    color: colors.textDark
+                  }}
+                >
+                  <p style={{ margin: '0', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <FiAlertCircle color={colors.error} /> {passwordForm.error}
+                  </p>
+                </motion.div>
+              )}
+              
+              {passwordForm.success && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  style={{
+                    padding: '1rem',
+                    backgroundColor: `${colors.success}10`,
+                    borderRadius: '6px',
+                    border: `1px solid ${colors.success}`,
+                    marginBottom: '1.5rem',
+                    color: colors.textDark
+                  }}
+                >
+                  <p style={{ margin: '0', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <FiCheckCircle color={colors.success} /> {passwordForm.success}
+                  </p>
+                </motion.div>
+              )}
+              
+              <form onSubmit={handlePasswordSubmit}>
+                <div  style={{ 
+                      marginBottom: '0.5rem',}}>
+                
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      marginBottom: '0.5rem', 
+                      fontSize: '0.875rem',
+                      fontWeight: '500', 
+                      color: colors.textDark 
+                    }}>
+                      Mot de passe actuel
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        type={showCurrentPassword ? 'text' : 'password'}
+                        name="currentPassword"
+                        value={passwordForm.currentPassword}
+                        onChange={handlePasswordChange}
+                        style={{ 
+                          width: '80%',
+                          padding: '0.75rem', 
+                          border: `1px solid ${colors.border}`,
+                          borderRadius: '6px', 
+                          fontSize: '0.95rem',
+                          paddingRight: '1rem',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onFocus={(e) => {
+                          e.target.style.borderColor = colors.primary;
+                          e.target.style.boxShadow = `0 0 0 2px ${colors.primary}20`;
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = colors.border;
+                          e.target.style.boxShadow = 'none';
+                        }}
+                        required
+                      />
+                     
+                    </div>
+                  </div>
+                   
+                    <div>
+                    <label style={{ 
+                      display: 'block', 
+                      marginBottom: '0.5rem', 
+                      fontSize: '0.875rem',
+                      fontWeight: '500', 
+                      color: colors.textDark 
+                    }}>
+                      Nouveau mot de passe
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        type={showNewPassword ? 'text' : 'password'}
+                        name="newPassword"
+                        value={passwordForm.newPassword}
+                        onChange={handlePasswordChange}
+                        style={{ 
+                          width: '80%',
+                          padding: '0.75rem', 
+                          border: `1px solid ${colors.border}`,
+                          borderRadius: '6px', 
+                          fontSize: '0.95rem',
+                          paddingRight: '1rem',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onFocus={(e) => {
+                          e.target.style.borderColor = colors.primary;
+                          e.target.style.boxShadow = `0 0 0 2px ${colors.primary}20`;
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = colors.border;
+                          e.target.style.boxShadow = 'none';
+                        }}
+                        minLength="8"
+                        required
+                      />
+                     
+                    </div>
+                  </div>
+                 
+                  
+                  <div>
+                    
+                    <label style={{ 
+                      display: 'block', 
+                      marginBottom: '0.5rem', 
+                      fontSize: '0.875rem',
+                      fontWeight: '500', 
+                      color: colors.textDark 
+                    }}>
+                      Confirmer le mot de passe
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        name="confirmPassword"
+                        value={passwordForm.confirmPassword}
+                        onChange={handlePasswordChange}
+                        style={{ 
+                          width: '80%',
+                          padding: '0.75rem', 
+                          border: `1px solid ${colors.border}`,
+                          borderRadius: '6px', 
+                          fontSize: '0.95rem',
+                          paddingRight: '1rem',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onFocus={(e) => {
+                          e.target.style.borderColor = colors.primary;
+                          e.target.style.boxShadow = `0 0 0 2px ${colors.primary}20`;
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = colors.border;
+                          e.target.style.boxShadow = 'none';
+                        }}
+                        required
+                      />
+                     
+                    </div>
+                  </div>
+                  
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <div style={{ 
+                      backgroundColor: 'white',
+                      borderRadius: '6px',
+                      padding: '1rem',
+                      border: `1px solid ${colors.border}`
+                    }}>
+                      <h4 style={{ 
+                        fontSize: '0.875rem',
+                        fontWeight: '600',
+                        margin: '0 0 0.5rem 0',
+                        color: colors.textDark
+                      }}>
+                        Exigences du mot de passe
+                      </h4>
+                      <ul style={{ 
+                        fontSize: '0.85rem',
+                        color: colors.textLight,
+                        margin: 0,
+                        paddingLeft: '1.25rem',
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap: '0.5rem'
+                      }}>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          {passwordForm.newPassword?.length >= 8 ? (
+                            <FiCheck color={colors.success} size={14} />
+                          ) : (
+                            <FiX color={colors.error} size={14} />
+                          )}
+                          Minimum 8 caractères
+                        </li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          {/[A-Z]/.test(passwordForm.newPassword) ? (
+                            <FiCheck color={colors.success} size={14} />
+                          ) : (
+                            <FiX color={colors.error} size={14} />
+                          )}
+                          Une majuscule
+                        </li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          {/[a-z]/.test(passwordForm.newPassword) ? (
+                            <FiCheck color={colors.success} size={14} />
+                          ) : (
+                            <FiX color={colors.error} size={14} />
+                          )}
+                          Une minuscule
+                        </li>
+                        <li style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          {/\d/.test(passwordForm.newPassword) ? (
+                            <FiCheck color={colors.success} size={14} />
+                          ) : (
+                            <FiX color={colors.error} size={14} />
+                          )}
+                          Un chiffre
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="submit"
+                    disabled={!isPasswordEditing || isPasswordLoading}
+                    style={{
+                      padding: '0.75rem 1.5rem',
+                      backgroundColor: isPasswordEditing ? colors.primary : `${colors.primary}80`,
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: isPasswordEditing ? 'pointer' : 'not-allowed',
+                      fontSize: '0.875rem',
+                      fontWeight: '500',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      opacity: isPasswordLoading ? 0.7 : 1
+                    }}
+                  >
+                    {isPasswordLoading ? (
+                      <>
+                        <FiLoader className="animate-spin" size={16} />
+                        En cours...
+                      </>
+                    ) : (
+                      <>
+                        <FiKey size={16} />
+                        Changer le mot de passe
+                      </>
+                    )}
+                  </motion.button>
+                </div>
+              </form>
             </div>
           </div>
-        );
+        </motion.div>
+      );
 
-      case 'security':
-        return (
-         <div >
-      <h2 style={{ fontSize: '1.3rem', marginBottom: '1.5rem', color: colors.secondary }}>Change password</h2>
-      
-      {passwordForm.error && (
-        <div style={{ 
-          color: colors.error,
-          marginBottom: '1rem',
-          padding: '0.75rem',
-          backgroundColor: `${colors.error}10`,
-          borderRadius: '4px'
-        }}>
-          {passwordForm.error}
-        </div>
-      )}
-      
-      {passwordForm.success && (
-        <div style={{ 
-          color: colors.success,
-          marginBottom: '1rem',
-          padding: '0.75rem',
-          backgroundColor: `${colors.success}10`,
-          borderRadius: '4px'
-        }}>
-          {passwordForm.success}
-        </div>
-      )}
-      
-      <form onSubmit={handlePasswordSubmit}>
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: colors.secondary }}>
-            Current password
-          </label>
-          <input
-            type="password"
-            name="currentPassword"
-            value={passwordForm.currentPassword}
-            onChange={handlePasswordChange}
-            placeholder="Enter current password"
-            style={{ 
-              width: '100%', 
-              padding: '0.75rem', 
-              border: `1px solid ${colors.border}`, 
-              borderRadius: '4px', 
-              fontSize: '1rem' 
-            }}
-            required
-          />
-        </div>
-        
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: colors.secondary }}>
-            New password
-          </label>
-          <input
-            type="password"
-            name="newPassword"
-            value={passwordForm.newPassword}
-            onChange={handlePasswordChange}
-            placeholder="Enter new password (min 8 characters)"
-            style={{ 
-              width: '100%', 
-              padding: '0.75rem', 
-              border: `1px solid ${colors.border}`, 
-              borderRadius: '4px', 
-              fontSize: '1rem' 
-            }}
-            minLength="8"
-            required
-          />
-        </div>
-        
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: colors.secondary }}>
-            Confirm new password
-          </label>
-          <input
-            type="password"
-            name="confirmPassword"
-            value={passwordForm.confirmPassword}
-            onChange={handlePasswordChange}
-            placeholder="Re-type new password"
-            style={{ 
-              width: '100%', 
-              padding: '0.75rem', 
-              border: `1px solid ${colors.border}`, 
-              borderRadius: '4px', 
-              fontSize: '1rem' 
-            }}
-            required
-          />
-        </div>
-        
-        <button
-          type="submit"
-          disabled={!isPasswordEditing || isPasswordLoading}
-          style={{
-            backgroundColor: isPasswordEditing ? colors.primary : colors.accent,
-            color: 'white',
-            border: 'none',
-            padding: '0.75rem 1.5rem',
-            borderRadius: '4px',
-            cursor: isPasswordEditing ? 'pointer' : 'not-allowed',
-            fontSize: '1rem',
-            transition: 'background-color 0.2s',
-            opacity: isPasswordLoading ? 0.7 : 1
-          }}
-          onMouseOver={(e) => isPasswordEditing && (e.target.style.backgroundColor = colors.primary)}
-          onMouseOut={(e) => isPasswordEditing && (e.target.style.backgroundColor = colors.accent)}
-        >
-          {isPasswordLoading ? 'Chargement...' : 'Change password'}
-        </button>
-      </form>
-    </div>
-        );
+    default:
+      return <div>Contenu non disponible</div>;
+  }
+};
 
-      default:
-        return <div>Profile Content</div>;
-    }
-  };
-
-  return (
-    <div style={{ 
-      maxWidth: '1200px', 
-      margin: '0 auto', 
-      padding: '2rem', 
-      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-    color: colors.textDark,
-      backgroundColor: colors.lightBg
-    }}>
-     <Header token={token} />
- 
+return (
+  <div style={{ 
+    flex: 1,
+    padding: '3rem',
+    paddingTop: '0.25rem',
+    marginTop: '3.5rem',
+    backgroundColor: '#FFFF',
+    minHeight: '100vh',
+    fontFamily: "'Inter', -apple-system, sans-serif"
+  }}>
+    <Header token={token} />
+    
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      style={{
+        maxWidth: '1200px',
+        margin: '2rem auto',
+        padding: '2rem',
+        backgroundColor: 'white',
+        borderRadius: '12px',
+        boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+        border: `1px solid ${colors.border}`
+      }}
+    >
       <div style={{ 
-        display: 'flex', 
-        borderTop: `1px solid ${colors.border}`, 
-        paddingTop: '1.5rem',
-        marginTop: '3rem'
+        display: 'flex',
+        gap: '2rem'
       }}>
         <nav style={{ 
-          width: '250px', 
-          paddingRight: '2rem', 
-          borderRight: `1px solid ${colors.border}`
+          width: '240px',
+          flexShrink: 0
         }}>
-          <button 
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-              padding: '0.75rem 1rem',
-              marginBottom: '0.5rem',
-              border: 'none',
-              background: activeTab === 'profile' ? '#E6FFFA' : 'none',
-              textAlign: 'left',
-              cursor: 'pointer',
-              color: activeTab === 'profile' ? colors.primary : colors.textLight,
-              borderRadius: '4px',
-              fontWeight: activeTab === 'profile' ? '500' : 'normal',
-              transition: 'all 0.2s'
-            }}
-            onClick={() => setActiveTab('profile')}
-          >
-            <FiUser style={{ marginRight: '0.75rem', fontSize: '1.1rem' }} /> Profile
-          </button>
-          <button 
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-              padding: '0.75rem 1rem',
-              marginBottom: '0.5rem',
-              border: 'none',
-              background: activeTab === 'photo' ? '#E6FFFA' : 'none',
-              textAlign: 'left',
-              cursor: 'pointer',
-              color: activeTab === 'photo' ? colors.primary : colors.textLight,
-              borderRadius: '4px',
-              fontWeight: activeTab === 'photo' ? '500' : 'normal',
-              transition: 'all 0.2s'
-            }}
-            onClick={() => setActiveTab('photo')}
-          >
-            <FiCamera style={{ marginRight: '0.75rem', fontSize: '1.1rem' }} /> Photo
-          </button>
-          <button 
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-              padding: '0.75rem 1rem',
-              marginBottom: '0.5rem',
-              border: 'none',
-              background: activeTab === 'security' ? '#E6FFFA' : 'none',
-              textAlign: 'left',
-              cursor: 'pointer',
-              color: activeTab === 'security' ? colors.primary : colors.textLight,
-              borderRadius: '4px',
-              fontWeight: activeTab === 'security' ? '500' : 'normal',
-              transition: 'all 0.2s'
-            }}
-            onClick={() => setActiveTab('security')}
-          >
-            <FiLock style={{ marginRight: '0.75rem', fontSize: '1.1rem' }} /> Account Security
-          </button>
-          <button 
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-              padding: '0.75rem 1rem',
-              marginBottom: '0.5rem',
-              border: 'none',
-              background: activeTab === 'subscriptions' ? '#E6FFFA' : 'none',
-              textAlign: 'left',
-              cursor: 'pointer',
-              color: activeTab === 'subscriptions' ? colors.primary : colors.textLight,
-              borderRadius: '4px',
-              fontWeight: activeTab === 'subscriptions' ? '500' : 'normal',
-              transition: 'all 0.2s'
-            }}
-            onClick={() => setActiveTab('subscriptions')}
-          >
-            <FiCreditCard style={{ marginRight: '0.75rem', fontSize: '1.1rem' }} /> Subscriptions
-          </button>
-          <button 
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-              padding: '0.75rem 1rem',
-              marginBottom: '0.5rem',
-              border: 'none',
-              background: activeTab === 'payments' ? '#E6FFFA' : 'none',
-              textAlign: 'left',
-              cursor: 'pointer',
-              color: activeTab === 'payments' ? colors.primary : colors.textLight,
-              borderRadius: '4px',
-              fontWeight: activeTab === 'payments' ? '500' : 'normal',
-              transition: 'all 0.2s'
-            }}
-            onClick={() => setActiveTab('payments')}
-          >
-            <FiCreditCard style={{ marginRight: '0.75rem', fontSize: '1.1rem' }} /> Payment methods
-          </button>
-
-          <button 
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-              padding: '0.75rem 1rem',
-              marginBottom: '0.5rem',
-              border: 'none',
-              background: activeTab === 'Deconnexion' ? '#E6FFFA' : 'none',
-              textAlign: 'left',
-              cursor: 'pointer',
-              color: activeTab === 'Deconnexion' ? colors.error : colors.error,
-              borderRadius: '4px',
-              fontWeight: activeTab === 'Deconnexion' ? '500' : 'normal',
-              transition: 'all 0.2s'
-            }}
-            onClick={handleLogout}
-          >     <MdLogout style={{ marginRight: '0.75rem', fontSize: '1.1rem' }}/>
-                    Déconnexion
-                   </button>
-         
+          <div style={{ 
+            padding: '1rem',
+            marginBottom: '1.5rem',
+            borderBottom: `1px solid ${colors.border}`
+          }}>
+            <h3 style={{ 
+              fontSize: '0.875rem',
+              fontWeight: '600',
+              color: colors.textLight,
+              margin: '0 0 0.5rem 0',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}>
+              Paramètres du compte
+            </h3>
+            <p style={{ 
+              fontSize: '1.25rem',
+              fontWeight: '600',
+              color: colors.textDark,
+              margin: 0
+            }}>
+              { formData.username ||'Mon compte'}
+            </p>
+          </div>
+          
+          {[
+            { id: 'profile', icon: <FiUser size={18} />, label: 'Profil' },
+            { id: 'photo', icon: <FiCamera size={18} />, label: 'Photo' },
+            { id: 'security', icon: <FiLock size={18} />, label: 'Sécurité' },
+            { id: 'subscriptions', icon: <FiCreditCard size={18} />, label: 'Abonnements' },
+            { id: 'payments', icon: <FiDollarSign size={18} />, label: 'Paiements' }
+          ].map((tab) => (
+            <motion.button
+              key={tab.id}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                width: '100%',
+                padding: '0.75rem 1rem',
+                marginBottom: '0.25rem',
+                border: 'none',
+                background: activeTab === tab.id ? `${colors.primary}10` : 'none',
+                textAlign: 'left',
+                cursor: 'pointer',
+                color: activeTab === tab.id ? colors.primary : colors.textDark,
+                borderRadius: '6px',
+                fontWeight: activeTab === tab.id ? '600' : 'normal',
+                transition: 'all 0.2s'
+              }}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span style={{ 
+                marginRight: '0.75rem',
+                opacity: activeTab === tab.id ? 1 : 0.7
+              }}>
+                {tab.icon}
+              </span>
+              {tab.label}
+            </motion.button>
+          ))}
+          
+          <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: `1px solid ${colors.border}` }}>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                width: '100%',
+                padding: '0.75rem 1rem',
+                border: 'none',
+                background: 'none',
+                textAlign: 'left',
+                cursor: 'pointer',
+                color: colors.error,
+                borderRadius: '6px',
+                fontWeight: '500',
+                transition: 'all 0.2s'
+              }}
+              onClick={handleLogout}
+            >
+              <span style={{ marginRight: '0.75rem' }}>
+                <FiLogOut size={18} />
+              </span>
+              Déconnexion
+            </motion.button>
+          </div>
         </nav>
         
-        <main style={{ flex: 1, paddingLeft: '2rem', backgroundColor: 'white', borderRadius: '8px', padding: '2rem' }}>
+        <main style={{ 
+          flex: 1,
+          padding: '0.5rem'
+        }}>
           {renderTabContent()}
         </main>
       </div>
-    </div>
-  );
+    </motion.div>
+  </div>
+);
 };
 
 export default Compte;

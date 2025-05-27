@@ -6,6 +6,21 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
+
+const colors = {
+  primary: '#1E3A8A',       // Bleu roi – confiance, autorité, prestige
+  secondary: '#2D3748',     // Gris foncé – modernité, sobriété
+  accent: '#1E3A8A',        // Bleu clair – boutons, interactions (hover/CTA)
+  lightBg: '#F9FAFB',       // Fond clair – propre, neutre
+  darkBg: '#1A202C',        // Fond sombre – header, footer, élégance
+  textDark: '#111827',      // Texte principal – lisible, sérieux
+  textLight: '#6B7280',     // Texte secondaire – descriptions, placeholders
+  border: '#E5E7EB',        // Bordures discrètes – pour structurer sans surcharger
+  success: '#16A34A',       // Vert succès – confirmation d’action réussie
+  error: '#DC2626',         // Rouge erreur – sérieux sans être agressif
+  warning: '#F59E0B'        // Jaune doux – signal d’attention maîtrisé
+};
+
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
@@ -32,21 +47,84 @@ const Header = () => {
 
   return (
     <header className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-sm' : 'bg-white/90'}`}>
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-20">
-
+      <div style={{
+      fontFamily: "'Inter', -apple-system, sans-serif",
+      maxWidth: "80rem",               // max-w-7xl = 1280px
+      marginLeft: "auto",
+      marginRight: "auto",
+      paddingLeft: "1.5rem",           // px-6
+      paddingRight: "1.5rem",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      height: "4.25rem"                   // h-20 = 80px
+    }}>
         {/* Logo */}
         <motion.div
           whileHover={{ scale: 1.02 }}
           onClick={() => router.push('/')}
-          className="flex items-center gap-3 cursor-pointer group"
+          className="flex items-center gap-0 cursor-pointer group"
         >
           <div className="relative">
             <FaGraduationCap className="text-3xl text-[#2A3F8F] relative z-10 transition-transform group-hover:rotate-12" />
             <div className="absolute inset-0 bg-[#00BCD4] rounded-full blur-[8px] opacity-20 group-hover:opacity-30 transition-opacity"></div>
           </div>
-          <span className="text-2xl font-bold text-[#2A3F8F]">
-            CertifyMe
-          </span>
+          {/* Logo CertifyMe */}
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => router.push(`/`)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.8rem',
+            cursor: 'pointer',
+            background: 'transparent',
+            padding: '0.5rem 0',
+            fontSize: '1.8rem',
+            fontWeight: '800',
+            fontStyle: 'italic',
+            letterSpacing: '-0.5px',
+            background: `linear-gradient(135deg, 
+              ${colors.primary} 0%, 
+              ${colors.secondary} 30%, 
+              ${colors.accent} 70%, 
+              ${colors.primary} 100%)`,
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+            color: 'transparent',
+            textShadow: `0 2px 8px ${colors.primary}30`,
+            position: 'relative',
+            padding: '0 0.5rem'
+          }}
+          animate={{
+            backgroundPosition: ['0% 50%', '100% 50%']
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        >
+          CertifyMe
+          <span style={{
+            position: 'absolute',
+            top: '-10%',
+            left: 0,
+            width: '100%',
+            height: '120%',
+            background: `linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)`,
+            transform: 'translateX(-100%)',
+            animation: 'shine 3s infinite'
+          }}/>
+          <style jsx>{`
+            @keyframes shine {
+              0% { transform: translateX(-100%) rotate(10deg); }
+              20% { transform: translateX(100%) rotate(10deg); }
+              100% { transform: translateX(100%) rotate(10deg); }
+            }
+          `}</style>
+        </motion.div>
         </motion.div>
 
         {/* Navigation */}

@@ -142,7 +142,7 @@ const colors = {
     </>
   }
   back={
-    <p style={{ color: colors.textLight, lineHeight: '1.6' }}>
+    <p style={{ color: '#A9BBD0', lineHeight: '1.6' }}>
       Chaque diplôme est enregistré sur la blockchain, assurant une traçabilité et une sécurité sans faille.
     </p>
   }
@@ -726,7 +726,7 @@ const colors = {
           fontSize: '0.8rem',
           opacity: 0.7
         }}>
-          <div>© 2023 CertifyMe. Tous droits réservés.</div>
+          <div>© 2025 CertifyMe. Tous droits réservés.</div>
           <div style={{ display: 'flex', gap: '1.5rem' }}>
             <a href="#" style={{ color: 'white', textDecoration: 'none' }}>Confidentialité</a>
             <a href="#" style={{ color: 'white', textDecoration: 'none' }}>Conditions</a>

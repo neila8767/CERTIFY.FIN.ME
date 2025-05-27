@@ -4,7 +4,7 @@ import { FaEnvelope, FaCheckCircle, FaArrowLeft, FaShieldAlt, FaLock, FaChevronR
 import { RiShieldKeyholeLine } from 'react-icons/ri';
 import { BsPatchCheckFill } from 'react-icons/bs';
 import { FaUniversity } from 'react-icons/fa';
-
+import Header from "../../components/Header.jsx";
 import { useAuth } from './AuthContext';
 import { useRouter } from 'next/router';
 
@@ -31,6 +31,15 @@ const EmailVerification = () => {
   
 
   return (
+     <div>
+    
+           <header className="bg-white  border-b border-gray-200">
+            <Header />
+          </header>
+    
+        {/* Contenu principal - prend toute la largeur */}
+        <main >
+       
     <div style={{
       backgroundColor: colors.lightBg,
       minHeight: '100vh',
@@ -479,6 +488,8 @@ const EmailVerification = () => {
           </a>
         </motion.div>
       </motion.div>
+    </div>
+    </main>
     </div>
   );
 };

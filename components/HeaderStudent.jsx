@@ -1,594 +1,511 @@
+import jwt from 'jsonwebtoken';
+ import React, { useState, useEffect } from 'react';
+   import { FaLock, FaHistory, FaUserCircle, FaGraduationCap, FaBell,FaUserCog, FaChevronDown, FaSignOutAlt, FaCog, FaUser, FaShieldAlt } from 'react-icons/fa';
+   import { SiBlockchaindotcom } from 'react-icons/si';
+   import { MdDashboard, MdStorage, MdPeople, MdSchool } from 'react-icons/md';
+   import { motion, AnimatePresence } from 'framer-motion';
+   import { useRouter } from 'next/router';
+   import Notification from './Notification';
+   import axios from 'axios';
+ 
 
-  import React, { useState, useEffect } from 'react';
-  import { FaUserCircle, FaGraduationCap, FaBell,FaUserCog, FaChevronDown, FaSignOutAlt, FaCog, FaUser, FaShieldAlt } from 'react-icons/fa';
-  import { SiBlockchaindotcom } from 'react-icons/si';
-  import { MdDashboard, MdStorage, MdPeople, MdSchool } from 'react-icons/md';
-  import { motion, AnimatePresence } from 'framer-motion';
-  import { useRouter } from 'next/router';
+
+const Header = ({ token: propToken }) => {  // Rename prop to avoid conflict
+  const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [historyItems, setHistoryItems] = useState([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   
-  const colors = {
-    primary: '#2F855A',
-    secondary: '#2D3748',
-    accent: '#38A169',
-    darkBg: '#1A202C',
-    lightBg: '#F7FAFC',
-    textDark: '#1C1C1C',
-    textLight: '#718096',
-    border: '#CBD5E0',
-    blockchain: '#5F6FF9',
-    error: '#C53030'
-  };
+  const router = useRouter();
+  const [isScrolled, setIsScrolled] = useState(false);
   
-  const Header = ({ token }) => {
-    const [showAccountMenu, setShowAccountMenu] = useState(false);
-     
-    const handleLogout = () => {
-      localStorage.removeItem('university_token');
-      localStorage.removeItem('university_id');
-      router.push('/PageAcceuil/Login');
-    };
-    const router = useRouter();
-    const [activeMenu, setActiveMenu] = useState(null);
-    const [unreadNotifications, setUnreadNotifications] = useState(5);
-    const [isScrolled, setIsScrolled] = useState(false);
-    const [networkStatus, setNetworkStatus] = useState('mainnet');
-  
-    useEffect(() => {
-      const handleScroll = () => setIsScrolled(window.scrollY > 10);
-      window.addEventListener('scroll', handleScroll);
-      return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-  
-    const notifications = [
-      { id: 1, text: "Nouveau certificat minté", time: "3 min", read: false, icon: <SiBlockchaindotcom /> },
-      { id: 2, text: "Transaction confirmée (0x3f...d21c)", time: "25 min", read: true, icon: <FaShieldAlt /> },
-      { id: 3, text: "2 nouvelles demandes de vérification", time: "1h", read: false, icon: <MdPeople /> },
-      { id: 4, text: "Mise à jour du smart contract", time: "4h", read: true, icon: <MdStorage /> },
-      { id: 5, text: "Audit de sécurité complété", time: "1j", read: true, icon: <FaShieldAlt /> }
-    ];
-      const safeToken = encodeURIComponent(token);
+  // Use either the prop token or the localStorage token
+  const token = propToken || localStorage.getItem('student_token');
+  const safeToken = encodeURIComponent(token || '');
+
+  const fetchHistory = async () => {
+    setIsLoadingHistory(true);
+    try {
+      console.log("[DEBUG] Token avant décodage:", token); 
+      const decodedToken = jwt.decode(token);
+      console.log("[DEBUG] Token décodé:", decodedToken);
+
+      const idEtudiant = decodedToken?.studentId;
+
+      if (!idEtudiant) {
+        throw new Error("ID étudiant manquant dans le token");
+      }
+
+      const response = await fetch(`http://localhost:5000/historique`, {
+        method: 'GET',
+          headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      });
+
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(`Réponse inattendue: ${text.substring(0, 100)}`);
+      }
+
+      const data = await response.json();
       
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur serveur');
+      }
 
-    const menuItems = [
-     {
-        id: 'blockchain',
-        label: 'Explorateur Blockchain',
-        icon: <SiBlockchaindotcom />,
-        subItems: [
-          { label: 'Transactions', action: () => router.push('/blockchain/transactions') },
-          { label: 'Smart Contracts', action: () => router.push('/blockchain/contracts') },
-          { label: 'Certificats NFT', action: () => router.push('/blockchain/nfts') }
-        ]
-      },     
-      {
-        id: 'university',
-        label: 'Gestion Universitaire',
-        icon: <MdSchool />,
-        subItems: [
-          { label: 'Facultés & Départements', action: () => router.push(`/university/${token}/IntegrationBd?token=${safeToken}`)
-        },
-          { label: 'Étudiants', action: () => router.push(`/university/${token}/IntegrationEtudiant?token=${safeToken}`)
-        },
-          { label: 'Diplômes', action: () => router.push('/university/diplomas') }
-        ]
-      }
-    ];
+      setHistoryItems(data.historique || []);
+    } catch (error) {
+      console.error('Erreur fetchHistory:', error);
+      alert(`Erreur: ${error.message}`);
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  };
+
   
-    const handleMenuAction = (item) => {
-      if (item.action) {
-        item.action();
-        setActiveMenu(null);
-      } else if (item.component) {
-        router.push(item.component);
-        setActiveMenu(null);
-      }
-    };
-  
-    const shortenAddress = (addr) => `${addr.slice(0, 6)}...${addr.slice(-4)}`;
-  
-    return (
-      <header style={{
+
+
+  useEffect(() => {
+    if (showHistory) {
+      fetchHistory();
+    }
+  }, [showHistory]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('student_token');
+    localStorage.removeItem('student_id');
+    router.push('/PageAcceuil/Login');
+  };
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+   
+ const colors = {
+   primary: '#1E3A8A',       // Bleu roi – confiance, autorité, prestige
+   secondary: '#2D3748',     // Gris foncé – modernité, sobriété
+   accent: '#1E3A8A',        // Bleu clair – boutons, interactions (hover/CTA)
+   lightBg: '#F9FAFB',       // Fond clair – propre, neutre
+   darkBg: '#1A202C',        // Fond sombre – header, footer, élégance
+   textDark: '#111827',      // Texte principal – lisible, sérieux
+   textLight: '#6B7280',     // Texte secondaire – descriptions, placeholders
+   border: '#E5E7EB',        // Bordures discrètes – pour structurer sans surcharger
+   success: '#16A34A',       // Vert succès – confirmation d’action réussie
+   error: '#DC2626',         // Rouge erreur – sérieux sans être agressif
+   warning: '#F59E0B'        // Jaune doux – signal d’attention maîtrisé
+ };
+   
+      
+     const [activeMenu, setActiveMenu] = useState(null);
+     const [unreadNotifications, setUnreadNotifications] = useState(5);
+      const [networkStatus, setNetworkStatus] = useState('mainnet');
+   
+     useEffect(() => {
+       const handleScroll = () => setIsScrolled(window.scrollY > 10);
+       window.addEventListener('scroll', handleScroll);
+       return () => window.removeEventListener('scroll', handleScroll);
+     }, []);
+   
+        
+     const handleMenuAction = (item) => {
+       if (item.action) {
+         item.action();
+         setActiveMenu(null);
+       } else if (item.component) {
+         router.push(item.component);
+         setActiveMenu(null);
+       }
+     };
+   
+    
+      const [userData, setUserData] = useState({
+     username: '',
+     email: '',
+     role: '', 
+     
+   });
+   const [loading, setLoading] = useState(true);
+ 
+   // Récupération des données utilisateur
+   useEffect(() => {
+     const fetchUserData = async () => {
+       try {
+         const response = await axios.get('http://localhost:5000/infoSTUDENT', {
+           headers: { Authorization: `Bearer ${token}` }
+         });
+         
+         setUserData({
+           username: response.data.username || 'Utilisateur',
+           email: response.data.email || 'email@exemple.com',
+          });
+       } catch (error) {
+         console.error('Erreur lors de la récupération des données:', error);
+       } finally {
+         setLoading(false);
+       }
+     };
+ 
+     if (token && showAccountMenu) {
+       fetchUserData();
+     }
+   }, [token, showAccountMenu]);
+   
+ 
+     return (
+        <header className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-sm' : 'bg-white/90'}`}
+      style={{
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         zIndex: 1000,
         backgroundColor: isScrolled ? 'rgba(255,255,255,0.98)' : 'white',
-        backdropFilter: isScrolled ? 'blur(10px)' : 'none',
+        backdropFilter: isScrolled ? 'blur(20px)' : 'none',
         boxShadow: '0 2px 15px rgba(0,0,0,0.05)',
         borderBottom: `1px solid ${colors.border}`,
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        height: '72px'
+        height: '4.25rem'
       }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          maxWidth: '1440px',
-          margin: '0 auto',
-          padding: '0 2rem',
-          height: '100%'
-        }}>
-          {/* Logo et Navigation Principale */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-            {/* Logo */}
-                 <motion.div
-                   whileHover={{ scale: 1.05 }}
-                   onClick={() => router.push(`/ministry?token=${safeToken}`)}
-                   style={{
-                     display: 'flex',
-                     alignItems: 'center',
-                     gap: '0.8rem',
-                     cursor: 'pointer'
-                   }}
-                 >
-                   <div style={{
-                     background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                     width: '45px',
-                     height: '45px',
-                     borderRadius: '12px',
-                     display: 'flex',
-                     alignItems: 'center',
-                     justifyContent: 'center',
-                     boxShadow: `0 4px 12px ${colors.primary}40`
-                   }}>
-                     <FaGraduationCap color="white" size={20} />
-                   </div>
-                   <span style={{
-                     fontSize: '1.6rem',
-                     fontWeight: '800',
-                     background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                     WebkitBackgroundClip: 'text',
-                     backgroundClip: 'text',
-                     color: 'transparent'
-                   }}>CertifyMe</span>
-                 </motion.div>
-  
-            {/* Menu Principal */}
-            <nav style={{ display: 'flex', gap: '0.5rem' }}>
-              {menuItems.map((item) => (
-                <div key={item.id} style={{ position: 'relative' }}>
-                  <motion.button
+         <div style={{
+           display: 'flex',
+           alignItems: 'center',
+           justifyContent: 'space-between',
+           maxWidth: '1440px',
+           margin: '0 auto',
+           padding: '0 2rem',
+           height: '100%'
+         }}>
+           {/* Logo et Navigation Principale */}
+           <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+          {/* Logo */}
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    onClick={() => router.push('/')}
+                    className="flex items-center gap-0 cursor-pointer group"
+                  >
+                    <div className="relative">
+                      <FaGraduationCap className="text-3xl text-[#2A3F8F] relative z-10 transition-transform group-hover:rotate-12" />
+                      <div className="absolute inset-0 bg-[#00BCD4] rounded-full blur-[8px] opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                    </div>
+                    {/* Logo CertifyMe */}
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => router.push(`/`)}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.5rem',
-                      padding: '0.75rem 1.25rem',
-                      borderRadius: '8px',
-                      border: 'none',
-                      backgroundColor: activeMenu === item.id ? colors.lightBg : 'transparent',
-                      color: activeMenu === item.id ? colors.primary : colors.textDark,
+                      gap: '0.8rem',
                       cursor: 'pointer',
-                      fontSize: '0.9rem',
-                      fontWeight: '500',
-                      transition: 'all 0.2s ease'
+                      background: 'transparent',
+                      padding: '0.5rem 0',
+                      fontSize: '1.8rem',
+                      fontWeight: '800',
+                      fontStyle: 'italic',
+                      letterSpacing: '-0.5px',
+                      background: `linear-gradient(135deg, 
+                        ${colors.primary} 0%, 
+                        ${colors.secondary} 30%, 
+                        ${colors.accent} 70%, 
+                        ${colors.primary} 100%)`,
+                      WebkitBackgroundClip: 'text',
+                      backgroundClip: 'text',
+                      color: 'transparent',
+                      textShadow: `0 2px 8px ${colors.primary}30`,
+                      position: 'relative',
+                      padding: '0 0.5rem'
                     }}
-                    whileHover={{ backgroundColor: colors.lightBg }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => item.subItems ? setActiveMenu(activeMenu === item.id ? null : item.id) : handleMenuAction(item)}
+                    animate={{
+                      backgroundPosition: ['0% 50%', '100% 50%']
+                    }}
+                    transition={{
+                      duration: 8,
+                      repeat: Infinity,
+                      ease: "linear"
+                    }}
                   >
-                    <span style={{ fontSize: '1.1rem' }}>{item.icon}</span>
-                    {item.label}
-                    {item.subItems && (
-                      <motion.span
-                        animate={{ rotate: activeMenu === item.id ? 180 : 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <FaChevronDown size={12} />
-                      </motion.span>
-                    )}
-                  </motion.button>
-  
-                  {/* Sous-menu */}
-                  {item.subItems && (
-                    <AnimatePresence>
-                      {activeMenu === item.id && (
-                        <motion.div
-                          style={{
-                            position: 'absolute',
-                            top: '100%',
-                            left: 0,
-                            backgroundColor: 'white',
-                            borderRadius: '8px',
-                            boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
-                            border: `1px solid ${colors.border}`,
-                            minWidth: '220px',
-                            padding: '0.5rem 0',
-                            zIndex: 20,
-                            overflow: 'hidden'
-                          }}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 10 }}
-                          transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                        >
-                          {item.subItems.map((subItem, index) => (
-                            <motion.button
-                              key={index}
-                              style={{
-                                width: '100%',
-                                textAlign: 'left',
-                                padding: '0.75rem 1.5rem',
-                                border: 'none',
-                                backgroundColor: 'transparent',
-                                cursor: 'pointer',
-                                fontSize: '0.9rem',
-                                color: colors.textDark,
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.75rem'
-                              }}
-                              whileHover={{ backgroundColor: colors.lightBg }}
-                              whileTap={{ scale: 0.98 }}
-                              onClick={() => handleMenuAction(subItem)}
-                            >
-                              {subItem.label}
-                            </motion.button>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  )}
-                </div>
-              ))}
-            </nav>
-          </div>
-  
-          {/* Côté Droit - Utilisateur et Notifications */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-            {/* Indicateur Blockchain */}
-          
-             
-  
-            {/* Notifications */}
-            <div style={{ position: 'relative' }}>
-              <motion.button
-                style={{
-                  position: 'relative',
-                 display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'transparent',
-                  cursor: 'pointer',
-                  color: colors.textDark
-                }}
-                whileHover={{ backgroundColor: colors.lightBg }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setActiveMenu(activeMenu === 'notifications' ? null : 'notifications')}
-              >
-                <FaBell size={18}  color='black'/>
-                {unreadNotifications > 0 && (
-                  <span style={{
-                    position: 'absolute',
-                    top: '-4px',
-                    right: '-4px',
-                    backgroundColor: colors.error,
-                    color: 'white',
-                    borderRadius: '50%',
-                    width: '18px',
-                    height: '18px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '0.65rem',
-                    fontWeight: '600',
-                    border: '2px solid white'
-                  }}>
-                    {unreadNotifications}
-                  </span>
-                )}
-              </motion.button>
-  
-              <AnimatePresence>
-                {activeMenu === 'notifications' && (
-                  <motion.div
-                    style={{
+                    CertifyMe
+                    <span style={{
                       position: 'absolute',
-                      top: 'calc(100% + 10px)',
-                      right: 0,
-                      backgroundColor: 'white',
-                      borderRadius: '12px',
-                      boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
-                      border: `1px solid ${colors.border}`,
-                      width: '360px',
-                      maxHeight: '480px',
-                      overflow: 'hidden',
-                      zIndex: 30
-                    }}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                  >
-                    <div style={{
-                      padding: '1rem 1.5rem',
-                      borderBottom: `1px solid ${colors.border}`,
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center'
-                    }}>
-                      <h3 style={{
-                        margin: 0,
-                        fontSize: '1rem',
-                        fontWeight: '600',
-                        color: colors.textDark
-                      }}>
-                        Notifications Blockchain
-                      </h3>
-                      <button
-                        style={{
-                          border: 'none',
-                          backgroundColor: 'transparent',
-                          color: colors.primary,
-                          cursor: 'pointer',
-                          fontSize: '0.8rem',
-                          fontWeight: '500'
-                        }}
-                        onClick={() => setUnreadNotifications(0)}
-                      >
-                        Tout marquer comme lu
-                      </button>
-                    </div>
-                    <div style={{ maxHeight: '380px', overflowY: 'auto' }}>
-                      {notifications.map((notif) => (
-                        <div
-                          key={notif.id}
-                          style={{
-                            padding: '1rem 1.5rem',
-                            borderBottom: `1px solid ${colors.border}`,
-                            backgroundColor: notif.read ? 'white' : `${colors.primary}05`,
-                            cursor: 'pointer',
-                            transition: 'all 0.2s ease'
-                          }}
-                          onClick={() => !notif.read && setUnreadNotifications(prev => prev - 1)}
-                          onMouseEnter={e => e.currentTarget.style.backgroundColor = notif.read ? colors.lightBg : `${colors.primary}10`}
-                          onMouseLeave={e => e.currentTarget.style.backgroundColor = notif.read ? 'white' : `${colors.primary}05`}
-                        >
-                          <div style={{
-                            display: 'flex',
-                            gap: '1rem',
-                            alignItems: 'flex-start'
-                          }}>
-                            <div style={{
-                              flexShrink: 0,
-                              width: '32px',
-                              height: '32px',
-                              borderRadius: '8px',
-                              backgroundColor: `${colors.blockchain}15`,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              color: colors.blockchain
-                            }}>
-                              {notif.icon}
-                            </div>
-                            <div>
-                              <p style={{
-                                margin: '0 0 0.25rem 0',
-                                color: colors.textDark,
-                                fontWeight: notif.read ? '400' : '500',
-                                fontSize: '0.9rem'
-                              }}>
-                                {notif.text}
-                              </p>
-                              <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.5rem'
-                              }}>
-                                <span style={{
-                                  fontSize: '0.75rem',
-                                  color: colors.textLight
-                                }}>
-                                  {notif.time}
-                                </span>
-                                {!notif.read && (
-                                  <span style={{
-                                    width: '6px',
-                                    height: '6px',
-                                    borderRadius: '50%',
-                                    backgroundColor: colors.primary
-                                  }} />
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    <div style={{
-                      padding: '0.75rem 1.5rem',
-                      borderTop: `1px solid ${colors.border}`,
-                      textAlign: 'center'
-                    }}>
-                      <button
-                        style={{
-                          border: 'none',
-                          backgroundColor: 'transparent',
-                          color: colors.primary,
-                          cursor: 'pointer',
-                          fontSize: '0.85rem',
-                          fontWeight: '500'
-                        }}
-                      >
-                        Voir toutes les activités
-                      </button>
-                    </div>
+                      top: '-10%',
+                      left: 0,
+                      width: '100%',
+                      height: '120%',
+                      background: `linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)`,
+                      transform: 'translateX(-100%)',
+                      animation: 'shine 3s infinite'
+                    }}/>
+                    <style jsx>{`
+                      @keyframes shine {
+                        0% { transform: translateX(-100%) rotate(10deg); }
+                        20% { transform: translateX(100%) rotate(10deg); }
+                        100% { transform: translateX(100%) rotate(10deg); }
+                      }
+                    `}</style>
                   </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                  </motion.div>
   
-            {/* Menu Utilisateur */}
-             {/* Account Menu */}
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      onClick={() => setShowAccountMenu(!showAccountMenu)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        cursor: 'pointer',
-                        padding: '0.5rem 1rem',
-                        borderRadius: '10px',
-                        backgroundColor: showAccountMenu ? `${colors.primary}10` : 'transparent',
-                        transition: 'all 0.3s ease'
-                      }}
-                    >
-                      <div style={{
-                        width: '36px',
-                        height: '36px',
-                        borderRadius: '50%',
-                        background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white'
-                      }}>
-                        <FaUserCircle size={18} />
-                      </div>
-                      <FaChevronDown size={14} style={{
-                        transition: 'transform 0.3s ease',
-                        transform: showAccountMenu ? 'rotate(180deg)' : 'rotate(0)'
-                      }} />
-                    </motion.div>
-                  
-                  {/* Account Dropdown */}
-                        <AnimatePresence>
-                          {showAccountMenu && (
-                            <motion.div
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: 20 }}
-                              transition={{ duration: 0.2 }}
-                              style={{
-                                position: 'absolute',
-                                top: '80px',
-                                right: '20px',
-                                width: '250px',
-                                backgroundColor: 'white',
-                                borderRadius: '15px',
-                                boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-                                zIndex: 1001,
-                                overflow: 'hidden',
-                                border: `1px solid ${colors.primary}20`
-                              }}
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <div style={{
-                                padding: '1.2rem',
-                                borderBottom: `1px solid ${colors.lightBg}`,
-                                display: 'flex',
-                                gap: '0.8rem',
-                                alignItems: 'center'
-                              }}>
-                                <div style={{
-                                  width: '40px',
-                                  height: '40px',
-                                  borderRadius: '50%',
-                                  background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  color: 'white'
-                                }}>
-                                  <FaUserCircle size={20} />
-                                </div>
-                                <div>
-                                  <h4 style={{ 
-                                    fontSize: '0.95rem',
-                                    fontWeight: '600',
-                                    margin: '0 0 0.1rem',
-                                    color: colors.textDark
-                                  }}>
-                                   Université
-                                  </h4>
-                                  <p style={{ 
-                                    fontSize: '0.85rem',
-                                    margin: 0,
-                                    color: colors.textLight
-                                  }}>
-                                    Administrateur
-                                  </p>
-                                </div>
-                              </div>
-                              
-                              <div style={{ padding: '0.5rem 0' }}>
-                                <motion.button
-                                  whileHover={{ backgroundColor: colors.lightBg }}
-                                  onClick={() => router.push(`/ministry/account?token=${safeToken}`)}
-                                  style={{
-                                    width: '100%',
-                                    padding: '0.8rem 1.2rem',
-                                    background: 'none',
-                                    border: 'none',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '0.8rem',
-                                    cursor: 'pointer',
-                                    color: colors.textDark,
-                                    fontSize: '0.95rem',
-                                    textAlign: 'left'
-                                  }}
-                                >
-                                  <FaUserCircle color={colors.textLight} />
-                                  Mon compte
-                                </motion.button>
-                                
-                                <motion.button
-                                  whileHover={{ backgroundColor: colors.lightBg }}
-                                  onClick={() => router.push(`/ministry/settings?token=${safeToken}`)}
-                                  style={{
-                                    width: '100%',
-                                    padding: '0.8rem 1.2rem',
-                                    background: 'none',
-                                    border: 'none',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '0.8rem',
-                                    cursor: 'pointer',
-                                    color: colors.textDark,
-                                    fontSize: '0.95rem',
-                                    textAlign: 'left'
-                                  }}
-                                >
-                                  <FaCog color={colors.textLight} />
-                                  Paramètres
-                                </motion.button>
-                              </div>
-                              
-                              <div style={{
-                                padding: '0.5rem 0',
-                                borderTop: `1px solid ${colors.lightBg}`
-                              }}>
-                                <motion.button
-                                  whileHover={{ backgroundColor: colors.lightBg }}
-                                  onClick={handleLogout}
-                                  style={{
-                                    width: '100%',
-                                    padding: '0.8rem 1.2rem',
-                                    background: 'none',
-                                    border: 'none',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '0.8rem',
-                                    cursor: 'pointer',
-                                    color: colors.textDark,
-                                    fontSize: '0.95rem',
-                                    textAlign: 'left'
-                                  }}
-                                >
-                                  <FaSignOutAlt color={colors.textLight} />
-                                  Déconnexion
-                                </motion.button>
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-          </div>
-        </div>
-      </header>
-    );
-  };
-  
-  export default Header;
+             {/* Menu Principal */}
+             
+           </div>
+   
+            {/* Côté Droit - Utilisateur et Notifications */}
+     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+        {/* 🆕 Bouton Historique */}
+              <motion.button
+            whileHover={{ scale: 1.05 }}
+             onClick={() =>router.push(`/student/${token}/document`) }
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              cursor: 'pointer',
+              padding: '0.5rem 1rem',
+              borderRadius: '10px',
+              backgroundColor: showHistory ? `${colors.primary}10` : 'transparent',
+              border: 'none',
+              color: colors.textDark,
+              fontSize: '0.95rem',
+              fontWeight: '500'
+            }}
+          >
+           Extraction  
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+             onClick={() =>router.push(`/student/${token}/VerificationDiplome`) }
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              cursor: 'pointer',
+              padding: '0.5rem 1rem',
+              borderRadius: '10px',
+              backgroundColor: showHistory ? `${colors.primary}10` : 'transparent',
+              border: 'none',
+              color: colors.textDark,
+              fontSize: '0.95rem',
+              fontWeight: '500'
+            }}
+          >
+            Verification 
+          </motion.button>
+
+          {/* 🆕 Bouton Historique */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+               onClick={() =>router.push(`/student/${token}/Historique`) }
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              cursor: 'pointer',
+              padding: '0.5rem 1rem',
+              borderRadius: '10px',
+              border: 'none',
+              color: colors.textDark,
+              fontSize: '0.95rem',
+              fontWeight: '500'
+            }}
+          >
+            <FaHistory color={colors.primary} />
+            Historique
+          </motion.button>
+
+            {/* Composant Notification */}
+                    <Notification token={token} colors={colors} />
+          
+                    {/* Menu Utilisateur */}
+                                      <motion.div
+                                        whileHover={{ scale: 1.05 }}
+                                        onClick={() => setShowAccountMenu(!showAccountMenu)}
+                                        style={{
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          gap: '0.5rem',
+                                          cursor: 'pointer',
+                                          padding: '0.5rem 1rem',
+                                          borderRadius: '10px',
+                                          backgroundColor: showAccountMenu ? `${colors.primary}10` : 'transparent',
+                                          transition: 'all 0.3s ease'
+                                        }}
+                                      >
+                                        <div style={{
+                                          width: '36px',
+                                          height: '36px',
+                                          borderRadius: '50%',
+                                          background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          justifyContent: 'center',
+                                          color: 'white'
+                                        }}>
+                                          <FaUserCircle size={18} />
+                                        </div>
+                                        <FaChevronDown size={14} style={{
+                                          transition: 'transform 0.3s ease',
+                                          transform: showAccountMenu ? 'rotate(180deg)' : 'rotate(0)'
+                                        }} />
+                                      </motion.div>
+                            
+                                      {/* Account Dropdown */}
+                   <AnimatePresence>
+                     {showAccountMenu && (
+                       <motion.div
+                         initial={{ opacity: 0, y: 10 }}
+                         animate={{ opacity: 1, y: 0 }}
+                         exit={{ opacity: 0, y: 10 }}
+                         transition={{ duration: 0.25, ease: 'easeOut' }}
+                         style={{
+                           position: 'absolute',
+                           top: '80px',
+                           right: '20px',
+                           width: '280px',
+                           backgroundColor: '#ffffff',
+                           borderRadius: '16px',
+                           boxShadow: '0 12px 36px rgba(0, 0, 0, 0.12)',
+                           zIndex: 1001,
+                           overflow: 'hidden',
+                           border: `1px solid ${colors.primary}1A`, // 10% alpha
+                         }}
+                         onClick={(e) => e.stopPropagation()}
+                       >
+                         {/* Header */}
+                         <div style={{
+                           padding: '1rem 1.2rem',
+                           borderBottom: `1px solid ${colors.border}`,
+                           display: 'flex',
+                           alignItems: 'center',
+                           gap: '0.75rem'
+                         }}>
+                           <div style={{
+                             width: '42px',
+                             height: '42px',
+                             borderRadius: '50%',
+                             background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+                             display: 'flex',
+                             alignItems: 'center',
+                             justifyContent: 'center',
+                             color: 'white'
+                           }}>
+                             <FaUserCircle size={22} />
+                           </div>
+                           <div style={{ overflow: 'hidden' }}>
+                             <h4 style={{
+                               fontSize: '0.95rem',
+                               fontWeight: 600,
+                               margin: 0,
+                               color: colors.textDark,
+                               whiteSpace: 'nowrap',
+                               overflow: 'hidden',
+                               textOverflow: 'ellipsis',
+                               maxWidth: '180px'
+                             }}>
+                               {userData?.username || 'Utilisateur'}
+                             </h4>
+                             <p style={{
+                               fontSize: '0.82rem',
+                               margin: 0,
+                               color: colors.textLight,
+                               whiteSpace: 'nowrap',
+                               overflow: 'hidden',
+                               textOverflow: 'ellipsis',
+                               maxWidth: '180px'
+                             }}>
+                               {userData?.email || 'email@exemple.com'}
+                             </p>
+                           </div>
+                         </div>
+                   
+                         {/* Menu Options */}
+                         <div style={{ padding: '0.4rem 0' }}>
+                           {[
+                             {
+                               icon: <FaLock size={16} color={colors.textLight} />,
+                               label: 'Mon profil',
+                               action: () => router.push(`/student/${token}/Compte`)
+                             },
+                             {
+                               icon: <FaUserCircle size={16} color={colors.textLight} />,
+                               label: 'Ma page',
+                               action: () => router.push(`/student/${token}`)
+                             }
+                           ].map((item, i) => (
+                             <motion.button
+                               key={i}
+                               whileHover={{ backgroundColor: `${colors.primary}0A` }} // hover léger avec alpha
+                               onClick={item.action}
+                               style={{
+                                 width: '100%',
+                                 padding: '0.75rem 1.2rem',
+                                 background: 'none',
+                                 border: 'none',
+                                 display: 'flex',
+                                 alignItems: 'center',
+                                 gap: '0.75rem',
+                                 cursor: 'pointer',
+                                 color: colors.textDark,
+                                 fontSize: '0.92rem',
+                                 textAlign: 'left'
+                               }}
+                             >
+                               {item.icon}
+                               {item.label}
+                             </motion.button>
+                           ))}
+                         </div>
+                   
+                         {/* Déconnexion */}
+                         <div style={{
+                           padding: '0.4rem 0',
+                           borderTop: `1px solid ${colors.border}`
+                         }}>
+                           <motion.button
+                             whileHover={{ backgroundColor: `${colors.error}10` }} // léger rouge transparent
+                             onClick={handleLogout}
+                             style={{
+                               width: '100%',
+                               padding: '0.75rem 1.2rem',
+                               background: 'none',
+                               border: 'none',
+                               display: 'flex',
+                               alignItems: 'center',
+                               gap: '0.75rem',
+                               cursor: 'pointer',
+                               color: colors.error,
+                               fontSize: '0.92rem',
+                               textAlign: 'left'
+                             }}
+                           >
+                             <FaSignOutAlt size={16} color={colors.error} />
+                             Déconnexion
+                           </motion.button>
+                         </div>
+                       </motion.div>
+                     )}
+                   </AnimatePresence>
+                   
+ 
+                  </div>
+                </div>
+                {/* Barre inférieure dynamique */}
+                                     <motion.div
+                                       className="h-0.5 bg-gradient-to-r from-[#2A3F8F] to-[#00BCD4] origin-left"
+                                       initial={{ scaleX: 0 }}
+                                       animate={{ scaleX: isScrolled ? 1 : 0.2 }}
+                                       transition={{ type: 'spring', damping: 10 }}
+                                       style={{ transformOrigin: 'left' }}
+                                     />
+                
+              </header>
+     );
+   };
+   
+   export default Header;

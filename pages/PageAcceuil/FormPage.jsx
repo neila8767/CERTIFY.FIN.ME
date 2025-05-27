@@ -2,6 +2,7 @@ import { useAuth } from './AuthContext';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaUser, FaLock, FaPhone, FaEnvelope, FaShieldAlt } from 'react-icons/fa';
 import { useRouter } from 'next/router';
+import Header from "../../components/Header.jsx";
 
 const FormPage = () => {
   const {
@@ -38,6 +39,15 @@ const FormPage = () => {
   };
 
   return (
+     <div>
+    
+           <header className="bg-white  border-b border-gray-200">
+            <Header />
+          </header>
+    
+        {/* Contenu principal - prend toute la largeur */}
+        <main >
+       
     <div style={{
       backgroundColor: colors.lightBg,
       minHeight: '100vh',
@@ -637,6 +647,8 @@ const FormPage = () => {
           </a>
         </div>
       </motion.div>
+    </div>
+    </main>
     </div>
   );
 };
