@@ -1,0 +1,757 @@
+def extract_essential_info_precis(text):
+    info = {
+        'nom': None,
+        'prenom': None,
+        'diplome': None,
+        'date_naissance': None,
+        'lieu_naissance': None
+    }
+
+    # Extraction NOM et PRENOM (format: "KHALILI Rachid")
+    nom_match = re.search(r"Mest décerné a: Mr ([A-Z]+) ([A-Za-z]+)", text) or \
+                re.search(r"MEST DECEERNÉ A: M\. (\w+) (\w+)", text)
+    if nom_match:
+        info['nom'] = nom_match.group(1)
+        info['prenom'] = nom_match.group(2)
+
+    # Extraction DATE DE NAISSANCE (format: 05-07-1990)
+    date_match = re.search(r"Né le:\s*(\d{2}-\d{2}-\d{4})", text) or \
+                 re.search(r"Né LE:\s*(\d{2}-\d{2}-\d{4})", text) or \
+                 re.search(r"المولود في:\s*(\d{4}\.\d{2}\.\d{2})", text)
+    if date_match:
+        date_str = date_match.group(1)
+        # Standardisation de la date au format JJ-MM-AAAA
+        if '.' in date_str:  # Cas arabe "1990.07.05" -> "05-07-1990"
+            parts = date_str.split('.')
+            date_str = f"{parts[2]}-{parts[1]}-{parts[0]}"
+        info['date_naissance'] = date_str
+
+    # Extraction LIEU DE NAISSANCE (format: "Titlouline Merabitine")
+    lieu_match = re.search(r"Aa:\s*([A-Za-z\séèêëàâùûîïç]+)\b", text) or \
+                 re.search(r"AA:\s*([A-Za-z\séèêëàâùûîïç]+)\b", text) or \
+                 re.search(r"المولود في:[^\.]+\s+([\w\s]+) ولاية", text)
+    if lieu_match:
+        info['lieu_naissance'] = lieu_match.group(1).strip()
+
+    # Extraction DIPLOME (MASTER)
+    diplome_match = re.search(r"DIPLOME DE : ([A-Z]+)", text) or \
+                    re.search(r"le diplôme de: (\w+)", text) or \
+                    re.search(r"شهادة:\s*([\w\s]+)", text)
+    if diplome_match:
+        info['diplome'] = diplome_match.group(1)
+
+    return info
+
+
+
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    from flask import Flask, request, jsonify
+from flask_cors import CORS
+from pdf2image import convert_from_path
+from googletrans import Translator
+import os
+import re
+
+app = Flask(__name__)
+CORS(app)
+
+translator = Translator()
+
+from PIL import Image, ImageFilter, ImageOps
+import pytesseract
+
+def preprocess_image(image_path):
+    image = Image.open(image_path)
+    image = image.convert('L')  # niveaux de gris
+    image = ImageOps.autocontrast(image)  # améliorer contraste
+    image = image.filter(ImageFilter.MedianFilter())  # réduire bruit
+    # éventuellement binariser
+    threshold = 128
+    image = image.point(lambda p: p > threshold and 255)
+    return image
+
+def extract_text_from_image(image_path):
+    image = preprocess_image(image_path)
+    custom_config = r'--oem 3 --psm 6'  # oem=3 (LSTM), psm=6 (uniform block of text)
+    text = pytesseract.image_to_string(image, lang='fra+ara+eng', config=custom_config)
+    return text
+
+
+def extract_text_from_pdf(pdf_path):
+    images = convert_from_path(pdf_path)
+    text = ''
+    for image in images:
+        text += pytesseract.image_to_string(image, lang='ara+eng+fra') + '\n'
+    return text
+
+def translate_to_french(text):
+    if not text:
+        return None
+    chunk_size = 500
+    chunks = [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]
+    translated_chunks = []
+    for chunk in chunks:
+        try:
+            translated = translator.translate(chunk, src='auto', dest='fr')
+            translated_chunks.append(translated.text)
+        except Exception as e:
+            translated_chunks.append(f"[Erreur traduction : {e}]")
+    return ' '.join(translated_chunks)
+
+
+import re
+
+def extract_main_info(text):
+    text = text.replace('\n', ' ').replace('\r', ' ')
+
+    # Nom et prénom
+    name_match = re.search(
+        r"(?:Mr|M\.|Monsieur|السيد)\s+([A-ZÀ-Ÿ][a-zà-ÿ]+(?:\s+[A-ZÀ-Ÿ][a-zà-ÿ]+)*)\s+([A-ZÀ-Ÿ][a-zà-ÿ]+(?:[-\s][A-ZÀ-Ÿ][a-zà-ÿ]+)*)",
+        text, re.IGNORECASE)
+    if name_match:
+        prenom = name_match.group(1).strip()
+        nom = name_match.group(2).strip()
+    else:
+        prenom = nom = None
+
+    # Date de naissance
+    dob_match = re.search(
+        r"(?:Né\s+le|Né|ولد\s+في|المولود[ة]?\s+في)[:\-]?\s*(\d{2}[-/\.]\d{2}[-/\.]\d{4}|\d{4}[-/\.]\d{2}[-/\.]\d{2})",
+        text, re.IGNORECASE)
+    date_naissance = dob_match.group(1) if dob_match else None
+
+    # Lieu de naissance
+    lieu_match = re.search(
+        r"(?:Né\s+(?:le\s+)?(?:\d{2}[-/\.]\d{2}[-/\.]\d{4}\s+)?à|Aa:|المولود[ة]?\s+في)[:\-]?\s*([\w\s\-'’]+?)\s+(?:ولاية|Wilaya)",
+        text, re.IGNORECASE)
+    lieu_naissance = lieu_match.group(2).strip() if lieu_match else None
+
+    # Diplôme
+    diploma_match = re.search(
+        r"(?:DIPLOME\s+(?:DE|DU|DES|D')|le diplôme\s+(?:de|du|des|d')|شهادة)\s*:\s*([\w\s\-À-ÿ]+)",
+        text, re.IGNORECASE)
+    diplome = diploma_match.group(2).strip() if diploma_match else None
+
+    return {
+        'nom': nom,
+        'prenom': prenom,
+        'date_naissance': date_naissance,
+        'lieu_naissance': lieu_naissance,
+        'diplome': diplome
+    }
+
+
+def process_file(file_path):
+    ext = file_path.lower().rsplit('.', 1)[-1]
+    if ext in ['jpg', 'jpeg', 'png']:
+        extracted_text = extract_text_from_image(file_path)
+    elif ext == 'pdf':
+        extracted_text = extract_text_from_pdf(file_path)
+    else:
+        raise ValueError("Format de fichier non supporté")
+
+    original_info = extract_main_info(extracted_text)
+   
+    diplome = original_info.get('diplome', '')
+    if diplome and diplome.upper() in ['MASTER', 'LICENCE', 'DOCTORAT', 'INGENIEUR']:
+        # Diplôme en français, pas besoin de traduction
+        translated_info = original_info
+    else:
+        translated_info = {}
+        for key, value in original_info.items():
+            if isinstance(value, str) and value:
+                try:
+                    translated_value = translate_to_french(value)
+                except Exception as e:
+                    translated_value = f"[Erreur traduction : {e}]"
+            else:
+                translated_value = value
+            translated_info[key] = translated_value
+
+    # Debug prints
+    print("=== Texte original ===")
+    print(extracted_text)
+    print("=== Infos originales extraites ===")
+    print(original_info)
+    print("=== Infos traduites extraites ===")
+    print(translated_info)
+
+    return {
+        'original_info': original_info,
+        'translated_info': translated_info
+    }
+
+
+@app.route('/api/process-document', methods=['POST'])
+def process_document():
+    if 'file' not in request.files:
+        return jsonify({'error': 'Aucun fichier reçu'}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'Nom de fichier vide'}), 400
+
+    temp_dir = 'temp'
+    os.makedirs(temp_dir, exist_ok=True)
+    temp_path = os.path.join(temp_dir, file.filename)
+    
+    try:
+        file.save(temp_path)
+        result = process_file(temp_path)
+         
+        print("===== Résultat traitement document =====")
+        print("Original info extrait :", result['original_info'])
+        print("Translated info extrait :", result['translated_info'])
+        print("========================================")
+
+
+        return jsonify({
+            'status': 'success',
+            'original_info': result['original_info'],  # Correspond à ce que le frontend attend
+            'translated_info': result['translated_info']  # Correspond à ce que le frontend attend
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+        
+    finally:
+        try:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+        except Exception as e:
+            print(f"Erreur lors de la suppression du fichier temporaire: {e}")
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5001)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+def extract_main_info(text):
+    import re
+
+    # Normalisation
+    text = text.replace('\n', ' ').replace('\r', ' ').strip()
+
+    # === NOM & PRENOM ===
+    re_nom_prenom_decerne = re.compile(
+        r"(?:Décerne\s+a|Awarded\s+to)\s+([A-Z][a-zA-Zéèêëàâùûîïç'\-]+)\s+([A-Z][a-zA-Zéèêëàâùûîïç'\-]+)", 
+        re.IGNORECASE
+    )
+    re_nom_prenom = re.compile(
+        r"(?:Monsieur|Monsieu|Mr|M\.|السيد|Student)[\s:–-]+([A-ZÉÈÀÂÙÇ\-']+)\s+([A-ZÉÈÀÂÙÇ\-']+)", 
+        re.IGNORECASE
+    )
+    re_nom_prenom_fallback = re.compile(r"\b([A-Z]{2,})\s+([A-Z]{2,})\b")
+
+    name_match = (
+        re_nom_prenom_decerne.search(text)
+        or re_nom_prenom.search(text)
+        or re_nom_prenom_fallback.search(text)
+    )
+    if name_match:
+        nom, prenom = name_match.group(1).strip(), name_match.group(2).strip()
+    else:
+        nom = prenom = None
+
+    # === DIPLOME ===
+    re_diplome = re.compile(
+        r"(?:LE\s+)?(?:DIPLOME|DEGREE)\s+(?:DU|DE|DES|D'|IN)?\s*:?[\s]*([A-ZÉÈÀÂÙÇ\-]+)", 
+        re.IGNORECASE
+    )
+    re_diplome_ar = re.compile(r"شهادة\s*:?[\s]*([^\s\n\r]+)")
+    re_general_diploma_en = re.compile(
+    r"(?:(?P<name>[A-Za-z]+)(?:'s)?\sdegree|degree\s(?:of|in)\s(?P<name2>[A-Za-z\s\-]+))",
+    re.IGNORECASE
+)
+
+
+
+    diploma_match = re_general_diploma_en.search(text) or re_diplome.search(text) or re_diplome_ar.search(text) 
+    diplome = diploma_match.group(1).strip() if diploma_match else None
+
+    # === SPECIALITE ===
+    re_speciality = re.compile(
+        r"(?:SP[ÉE]CIALIT[ÉE]|SPECIALTY|SPECIALIZATION|تخصص)\s*:?[\s]*([A-Za-zéèêûîôâàäëïöüç\s\-']+?)(?=\s+(?:D[ée]livr[ée]|Issued|Delivered))",
+        re.IGNORECASE
+    )
+
+    speciality_match = re_speciality.search(text)
+    speciality = speciality_match.group(1).strip() if speciality_match else None
+
+    # === DATE DE NAISSANCE ===
+    re_date_naissance_std = re.compile(
+        r"(?:N[éeé]?\(e\)?\s+le|Born\s+on)\s+(\d{4}[-/]\d{2}[-/]\d{2})", 
+        re.IGNORECASE
+    )
+    re_date_naissance_ar = re.compile(r"المولود[ة]?\s+في\s+(\d{4}[\./-]\d{2}[\./-]\d{2})")
+
+    dob_match = (
+        re_date_naissance_std.search(text)
+        or re_date_naissance_ar.search(text)
+    )
+    date_naissance = dob_match.group(1).strip() if dob_match else None
+
+     # === LIEU DE NAISSANCE ===
+    re_lieu_naissance = re.compile(
+    r"\d{4}[-/]\d{2}[-/]\d{2}\s+(?:[àa]\s+|in\s+)([A-Za-zéèêëàâùûîïç\-']+)(?=\s+(?:Specialty|Spécialité|Speciality|Issued|Délivré|Delivered|Le\s+diplôme))",
+    re.IGNORECASE
+)
+
+    re_lieu_naissance_ar = re.compile(
+    r"المولود[ة]?\s+في\s+([^\s\:\n\r]+)\s+(?:ولاية|Wilaya)")
+
+    lieu_match = (
+    re_lieu_naissance.search(text)
+    or re_lieu_naissance_ar.search(text)
+)
+    lieu_naissance = lieu_match.group(1).strip() if lieu_match else None
+    return {
+        'nom': nom,
+        'prenom': prenom,
+        'diplome': diplome,
+        'speciality': speciality,
+        'date_naissance': date_naissance,
+        'lieu_naissance': lieu_naissance
+    }
+
+################
+
+
+async validateDiplomaService(diplomes, accountId) {
+  try {
+    console.log(`[validateDiplomaService] Début validation diplôme  par compte=${accountId}`);
+    const diplomesValides = [];
+
+    // 1. Trouver le ministère lié à ce compte
+    const ministere = await prisma.ministere.findFirst({
+      where: { accountId: accountId }
+    });
+
+    if (!ministere) {
+      console.error("[validateDiplomaService] Aucun ministère trouvé pour ce compte.");
+      throw new Error("Aucun ministère trouvé pour ce compte.");
+    }
+
+    if (!ministere.walletPrivateKey || !ministere.walletIV) {
+      console.error("[validateDiplomaService] Clé privée ou IV manquants pour ministère.");
+      throw new Error("Informations de sécurité manquantes pour le ministère.");
+    }
+
+
+      for (const diplome of diplomes) {
+        const diplomeId = diplome.diplomaId 
+  
+    // 2. Trouver le diplôme
+    const diplome = await prisma.diplome.findUnique({
+      where: { id: parseInt(diplomaId) }
+    });
+
+    if (!diplome) {
+      console.error(`[validateDiplomaService] Diplôme id=${diplomaId} non trouvé.`);
+      throw new Error("Diplôme non trouvé.");
+    }
+
+    if (diplome.complete) {
+      console.log(`[validateDiplomaService] Diplôme id=${diplomaId} est déjà validé.`);
+      return diplome; // Ou throw selon le besoin
+    }
+
+    const diplomaHash = diplome.diplomaHash;
+    console.log(`[validateDiplomaService] Hash du diplôme : ${diplomaHash}`);
+
+  
+    // 3. Déchiffrer la clé privée
+    let privateKey;
+    try {
+      privateKey = decrypt(ministere.walletPrivateKey, ministere.walletIV);
+      console.log("[validateDiplomaService] Clé privée déchiffrée avec succès.");
+    } catch (error) {
+      console.error("[validateDiplomaService] Erreur lors du déchiffrement de la clé privée :", error);
+      throw new Error("Impossible de déchiffrer la clé privée du ministère.");
+    }
+
+    // 4. Préparer la transaction blockchain
+    const txData = gestionDiplomeInstance.methods.approveDiploma(diplomaHash).encodeABI();
+    
+
+    const tx = {
+      from: ministere.walletAddress,
+      to: gestionDiplomeInstance.options.address,
+      data: txData,
+      gas: 200000,
+      gasPrice: '0',
+    };
+
+    console.log("[validateDiplomaService] Signature de la transaction...");
+    const signed = await web3.eth.accounts.signTransaction(tx, privateKey);
+   
+  
+    console.log("[validateDiplomaService] Envoi de la transaction signée...");
+    const receipt = await web3.eth.sendSignedTransaction(signed.rawTransaction);
+     
+    console.log("[validateDiplomaService] Transaction minée avec succès. Receipt :", receipt.transactionHash);
+
+    // 5. Mise à jour du diplôme en base
+    const updatedDiplome = await prisma.diplome.update({
+      where: { id: parseInt(diplomaId) },
+      data: { complete: true }
+    });
+    
+    
+    console.log(`[validateDiplomaService] Diplôme id=${diplomaId} validé en base.`);
+
+    diplomesValides.push(updatedDiplome);
+    }
+  
+     return updatedDiplome;  
+  
+  
+  } catch (error) {
+    console.error("[validateDiplomaService] Erreur :", error.message);
+    throw error; // Propager l'erreur pour la gestion plus haut dans la chaîne
+  }
+}
+
+
+~~~~~~~~~~~~~~~~~~~~~~~
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Notification {
+  id         Int              @id @default(autoincrement())
+  title      String
+  message    String
+  isRead     Boolean          @default(false)
+  type       NotificationType
+  createdAt  DateTime         @default(now())
+  receiverId Int
+  senderId   Int?
+  receiver   Account          @relation("Notification_receiver", fields: [receiverId], references: [id])
+  sender     Account?         @relation("NotificationSender", fields: [senderId], references: [id])
+}
+
+model Account {
+  id                    Int               @id @default(autoincrement())
+  username              String
+  email                 String            @unique
+  password              String
+  role                  Role
+  isVerified            Boolean           @default(false)
+  verificationToken     String?           @unique
+  createdAt             DateTime          @default(now())
+  ecole                 Ecole?            @relation("EcoleToAccount")
+  etudiant              Etudiant_account? @relation("Etudiant_accountToAccount")
+  ministere             Ministere?        @relation("MinistereToAccount")
+  notificationsReceived Notification[]    @relation("Notification_receiver")
+  notificationsSent     Notification[]    @relation("NotificationSender")
+  university            University?       @relation("UniversityToAccount")
+}
+
+model University {
+  idUni            Int            @id @default(autoincrement())
+  nomUni           String
+  adresseUni       String
+  telephoneUni     String
+  emailUni         String         @unique
+  accountId        Int            @unique
+  walletAddress    String?        @unique
+  walletIV         String         @default("initial_iv_value")
+  walletPrivateKey String?
+  modeleDiplomeId  Int?
+  departments      Department[]
+  faculties        Faculty[]
+  account          Account        @relation("UniversityToAccount", fields: [accountId], references: [id])
+  modeleDiplome    ModeleDiplome? @relation(fields: [modeleDiplomeId], references: [idModele])
+}
+
+model ModeleDiplome {
+  idModele     Int          @id @default(autoincrement())
+  nomModele    String
+  cheminModele String
+  universites  University[]
+}
+
+model ModeleDiplomeECOLE {
+  idModele     Int          @id @default(autoincrement())
+  nomModele    String
+  cheminModele String
+  ecoles  Ecole[]
+}
+
+model Ecole {
+  idEcole        Int          @id @default(autoincrement())
+  nomEcole       String
+  telephoneEcole String
+  emailEcole     String       @unique
+  adresseEcole       String
+  accountId      Int          @unique
+  role           RoleEcole
+  walletAddress    String?        @unique
+  walletIV         String         @default("initial_iv_value")
+  walletPrivateKey String?
+  account        Account      @relation("EcoleToAccount", fields: [accountId], references: [id])
+  EcoleAnnee     EcoleAnnee[]
+  Formation      Formation[]
+   modeleDiplomeId  Int?
+  modeleDiplome    ModeleDiplomeECOLE? @relation(fields: [modeleDiplomeId], references: [idModele])
+
+}
+
+model University_OFFICIAL {
+  idUni        Int    @id @default(autoincrement())
+  nomUni       String
+  adresseUni   String
+  telephoneUni String
+  emailUni     String @unique
+}
+
+
+
+model Ecole_OFFICIAL {
+  idEcole        Int       @id @default(autoincrement())
+  nomEcole       String
+  telephoneEcole String
+  emailEcole     String    @unique
+  role           RoleEcole
+}
+
+model Etudiant_account {
+  idEtudiant Int     @id @default(autoincrement())
+  nom        String
+  prenom     String
+  email      String  @unique
+  telephone  String  @unique
+  accountId  Int     @unique
+  account    Account @relation("Etudiant_accountToAccount", fields: [accountId], references: [id])
+}
+
+model Faculty {
+  idFaculty           Int                   @id @default(autoincrement())
+  nomFaculty          String
+  idUni               Int
+  cursusUniversitaire CursusUniversitaire[]
+  departments         Department[]
+  university          University            @relation(fields: [idUni], references: [idUni], onDelete: Cascade)
+}
+
+model Department {
+  idDepart            Int                   @id @default(autoincrement())
+  nomDepart           String
+  idFaculty           Int
+  idUni               Int
+  cursusUniversitaire CursusUniversitaire[]
+  faculty             Faculty               @relation(fields: [idFaculty], references: [idFaculty], onDelete: Cascade)
+  university          University            @relation(fields: [idUni], references: [idUni], onDelete: Cascade)
+}
+
+model Etudiant {
+  idEtudiant          Int                   @id @default(autoincrement())
+  nom                 String
+  prenom              String
+  email               String                @unique
+  matricule           String                @unique
+  telephone           String                @unique
+  dateNaissance       DateTime
+  lieuNaissance       String
+  CursusUniversitaire CursusUniversitaire[]
+  diplomes            Diplome[]
+}
+
+model EtudiantMinistere {
+  idEtudiantMinistere Int        @id @default(autoincrement())
+  nom                 String
+  prenom              String
+  email               String     @unique
+  matricule           String     @unique
+  dateNaissance       DateTime
+  lieuNaissance       String
+  ministereId         Int?
+  ministere           Ministere? @relation(fields: [ministereId], references: [id])
+}
+
+model Ministere {
+  id               Int                 @id @default(autoincrement())
+  nomMinistere     String
+  emailMinistere   String              @unique
+  pays             String?
+  accountId        Int                 @unique
+  numeroTelephone  String?             @unique
+  walletAddress    String?             @unique
+  walletIV         String              @default("initial_iv_value")
+  walletPrivateKey String?
+  typeMinistere    MinistereType       @default(ENSEIGNEMENT_SUPERIEUR)
+  etudiants        EtudiantMinistere[]
+  account          Account             @relation("MinistereToAccount", fields: [accountId], references: [id])
+}
+
+model Diplome {
+  id            Int         @id @default(autoincrement())
+  diplomaHash   String      @unique
+  etablissement String
+  studentName   String
+  birthDate     DateTime
+  diplomaTitle  String
+  diplomaType   DiplomaType
+  dateOfIssue   DateTime
+  speciality    String
+  complete      Boolean
+  etudiantId    Int
+  etudiant      Etudiant    @relation(fields: [etudiantId], references: [idEtudiant], onDelete: Cascade)
+
+  @@index([etudiantId])
+}
+
+model CursusUniversitaire {
+  id              Int                @id @default(autoincrement())
+  section         String
+  groupe          String
+  filiere         String
+  idFaculty       Int?
+  idDepart        Int?
+  specialite      String?
+  moyenneAnnuelle Float?
+  idAnnee         Int
+  niveau          Int
+  idEtudiant      Int
+  annee           AnneeUniversitaire @relation(fields: [idAnnee], references: [idAnnee], onDelete: Cascade)
+  department      Department?        @relation(fields: [idDepart], references: [idDepart], onDelete: Cascade)
+  etudiant        Etudiant           @relation(fields: [idEtudiant], references: [idEtudiant])
+  faculty         Faculty?           @relation(fields: [idFaculty], references: [idFaculty], onDelete: Cascade)
+}
+
+model AnneeUniversitaire {
+  idAnnee             Int                   @id @default(autoincrement())
+  annee               String
+  isCurrent           Boolean
+  anneediplome        Int
+  cursusUniversitaire CursusUniversitaire[]
+}
+
+model CursusEcole {
+  id            Int           @id @default(autoincrement())
+  moyenne       Float?
+  etudiantId    Int
+  anneeId       Int
+  formationId   Int
+  EcoleAnnee    EcoleAnnee    @relation(fields: [anneeId], references: [id])
+  EtudiantEcole EtudiantEcole @relation(fields: [etudiantId], references: [idEtudiantEcole])
+  Formation     Formation     @relation(fields: [formationId], references: [idFormation])
+
+  @@unique([etudiantId, anneeId, formationId])
+  @@index([formationId])
+}
+
+model EcoleAnnee {
+  id           Int           @id @default(autoincrement())
+  annee        String
+  anneediplome Int
+  isCurrent    Boolean       @default(false)
+  ecoleId      Int
+  CursusEcole  CursusEcole[]
+  Ecole        Ecole         @relation(fields: [ecoleId], references: [idEcole])
+
+  @@unique([annee, ecoleId])
+}
+
+model EtudiantEcole {
+  idEtudiantEcole Int            @id @default(autoincrement())
+  nom             String
+  prenom          String
+  email           String         @unique
+  matricule       String
+  moyenne         Float?
+  dateInscription DateTime       @default(now())
+  telephone       String?
+  dateNaissance   DateTime
+  lieuNaissance   String?
+  CursusEcole     CursusEcole[]
+  DiplomeEcole    DiplomeEcole[]
+}
+
+model Formation {
+  idFormation   Int           @id @default(autoincrement())
+  nomFormation  String
+  duree         String?
+  typeFormation String
+  ecoleId       Int
+  CursusEcole   CursusEcole[]
+  Ecole         Ecole         @relation(fields: [ecoleId], references: [idEcole])
+}
+
+model HistoriqueVerification {
+  id               Int      @id @default(autoincrement())
+  idEtudiant       Int
+  nomEtudiant      String
+  lienVerification String
+  titreDiplome     String
+  etablissement    String
+  dateDemande      DateTime @default(now())
+  dateDernierAcces DateTime @default(now())
+
+  @@index([idEtudiant])
+}
+
+model DiplomeEcole {
+  id              Int              @id @default(autoincrement())
+  diplomaHash     String           @unique
+  etablissement   String
+  studentName     String
+  birthDate       DateTime
+  diplomaTitle    String
+  diplomaType     DiplomeEcoleType
+  dateOfIssue     DateTime         @default(now())
+  specialite      String
+  moyenne         Float?
+  mention         String?
+  etudiantEcoleId Int
+  complete        Boolean          @default(false)
+  EtudiantEcole   EtudiantEcole    @relation(fields: [etudiantEcoleId], references: [idEtudiantEcole])
+
+  @@index([etudiantEcoleId])
+}
+
+enum Role {
+  UNIVERSITY
+  STUDENT
+  ECOLE
+  MINISTERE
+}
+
+enum RoleEcole {
+  ECOLE_SUPERIEURE
+  ECOLE_FORMATION
+}
+
+enum NotificationType {
+  DIPLOME_VALIDE
+  DIPLOME_REJETE
+  NOUVELLE_DEMANDE
+  COMPTE_VERIFIE
+  ALERT_GENERAL
+}
+
+enum DiplomaType {
+  Universite
+  EcolePrivee
+  EcoleProfessionnelle
+}
+
+enum DiplomeEcoleType {
+  PROFESSIONNEL
+  SUPERIEUR
+}
+
+enum MinistereType {
+  ENSEIGNEMENT_SUPERIEUR
+  FORMATION_PROFESSIONNELLE
+}
